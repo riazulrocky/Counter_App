@@ -37,12 +37,22 @@ class _CounterPageState extends State<CounterPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Counter App",
-              style: TextStyle(color: Colors.white, fontSize: 26),
+              "TAJBIH",
+              style: TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green),
             ),
             Text(
               _counter.toString(),
               style: TextStyle(color: Colors.white, fontSize: 185),
+            ),
+            Text(
+              "Count",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            SizedBox(
+              height: 40,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -51,17 +61,28 @@ class _CounterPageState extends State<CounterPage> {
                     onPressed: () {
                       _resetCounter();
                     },
-                    child: Icon(Icons.restore)),
+                    child: Icon(
+                      Icons.restore,
+                      color: Colors.black,
+                    )),
                 ElevatedButton(
                     onPressed: () {
                       _incrementCounter();
                     },
-                    child: Icon(Icons.add)),
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.green,
+                      size: 50,
+                    )),
                 ElevatedButton(
                   onPressed: () {
                     _decrementCounter();
                   },
-                  child: Icon(Icons.remove),
+                  child: Icon(
+                    Icons.remove,
+                    color: Colors.red,
+                    size: 25,
+                  ),
                 ),
               ],
             )
