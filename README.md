@@ -1,41 +1,38 @@
-# Tajbih Counter App
+🕌 DIGITAL TAJBIH COUNTER (FLUTTER)
 
-A simple Flutter app to count, increment, decrement, and reset numbers.  
-Designed with a clean black background for a minimal and distraction-free experience.
+A beautifully designed Flutter application that functions as a digital Tasbih (counter).  
+It allows users to increment, decrement, and reset the counter easily — perfect for daily zikr and counting purposes.
 
----
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-## Features
-- Increment the counter with a green plus button
-- Decrement the counter with a red minus button
-- Reset the counter instantly with a restore button
-- Large, easy-to-read number display
-- Simple and elegant dark theme
+## ✨ Features
 
----
+| What you get | Details |
+|--------------|---------|
+| 🔢 Counter System | Increment, decrement, and reset buttons for flexible counting |
+| 🎨 Modern UI | Black background with green highlight and bold typography |
+| 📱 Cross-Platform | Runs smoothly on Android, iOS, and web (if enabled) |
+| ⚡ Real-Time Update | Counter value updates instantly using setState() |
+| 🔇 Offline App | No internet connection required |
+| 🧭 Easy Navigation | Simple layout using Flutter’s Scaffold and Column widgets |
 
-## UI Preview
-------------------------
-|       TAJBIH         |
-|                      |
-|         12           |
-|       Count          |
-|                      |
-| [reset] [ + ] [ - ]  |
-------------------------
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
----
+## 🛠️ Technology Used
 
-## Why this project?
-A digital tasbih counter that is simple, distraction-free, and works offline.
+| Tool | Purpose |
+|------|----------|
+| 💙 Flutter | Main framework for app development |
+| 🧠 Dart | Programming language |
+| 🧩 Material Design | For buttons, text, and layout structure |
 
----
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-## Tech Stack
-- Flutter (Dart)
-- Material Design
+## 🚀 How to Run
 
----
+1. Clone or download this repository  
+2. Open the project in **VS Code** or **Android Studio**  
+3. Run the app using:
 
-## License
-This project is open-source and free to use.
+```bash
+flutter run
