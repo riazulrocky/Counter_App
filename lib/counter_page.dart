@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'about_developer.dart';
 import 'prayer_times_page.dart';
+import 'ramadan_page.dart';
 
 class DhikrData {
   final String nameBn;
@@ -10,6 +11,7 @@ class DhikrData {
   final String orthoBn;
   final String orthoEn;
   final int defaultCount;
+  final bool isGeneral;
 
   const DhikrData({
     required this.nameBn,
@@ -19,6 +21,7 @@ class DhikrData {
     required this.orthoBn,
     required this.orthoEn,
     required this.defaultCount,
+    this.isGeneral = false,
   });
 }
 
@@ -114,6 +117,16 @@ class _CounterPageState extends State<CounterPage> {
       orthoEn: "Send blessings upon the Prophet (PBUH)",
       defaultCount: 100,
     ),
+    DhikrData(
+      nameBn: "সাধারণ গণনা",
+      nameEn: "General Count",
+      uccharonBn: "",
+      uccharonEn: "",
+      orthoBn: "",
+      orthoEn: "",
+      defaultCount: 999999,
+      isGeneral: true,
+    ),
   ];
 
   late DhikrData _currentDhikr;
@@ -170,12 +183,18 @@ class _CounterPageState extends State<CounterPage> {
     final double screenWidth = mediaQuery.size.width;
 
     Widget mainContent;
-    if (_selectedIndex == 0) {
-      mainContent = _buildCounterBody(primaryGreen, animationDuration, screenWidth);
-    } else if (_selectedIndex == 1) {
-      mainContent = PrayerTimesPage(isDarkMode: widget.isDarkMode, isBangla: _isBangla);
-    } else {
-      mainContent = AboutDeveloperPage(isDarkMode: widget.isDarkMode);
+    switch (_selectedIndex) {
+      case 0:
+        mainContent = _buildCounterBody(primaryGreen, animationDuration, screenWidth);
+        break;
+      case 1:
+        mainContent = RamadanPage(isDarkMode: widget.isDarkMode, isBangla: _isBangla);
+        break;
+      case 2:
+        mainContent = PrayerTimesPage(isDarkMode: widget.isDarkMode, isBangla: _isBangla);
+        break;
+      default:
+        mainContent = AboutDeveloperPage(isDarkMode: widget.isDarkMode);
     }
 
     return AnimatedContainer(
@@ -208,6 +227,10 @@ class _CounterPageState extends State<CounterPage> {
               label: _isBangla ? "হোম" : "Home",
             ),
             BottomNavigationBarItem(
+              icon: const Icon(Icons.calendar_month),
+              label: _isBangla ? "ক্যালেন্ডার" : "Calendar",
+            ),
+            BottomNavigationBarItem(
               icon: const Icon(Icons.access_time),
               label: _isBangla ? "নামাজ" : "Prayer",
             ),
@@ -226,6 +249,8 @@ class _CounterPageState extends State<CounterPage> {
     if (_selectedIndex == 0) {
       title = _isBangla ? "ডিজিটাল তাসবিহ" : "Digital Tasbih";
     } else if (_selectedIndex == 1) {
+      title = _isBangla ? "রমজান ক্যালেন্ডার" : "Ramadan Calendar";
+    } else if (_selectedIndex == 2) {
       title = _isBangla ? "নামাজের সময়" : "Prayer Times";
     } else {
       title = _isBangla ? "ডেভেলপার সম্পর্কে" : "About Developer";
@@ -273,12 +298,12 @@ class _CounterPageState extends State<CounterPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 5), // Reduced space
+                  const SizedBox(height: 5), 
                   _buildSettingsCard(primaryGreen, animationDuration),
                   const SizedBox(height: 20),
                   _buildCounterCard(primaryGreen, animationDuration),
                   const SizedBox(height: 30),
-                  _buildActionButtons(primaryGreen),
+                  _buildModernActionButtons(primaryGreen),
                 ],
               ),
             ),
@@ -403,33 +428,34 @@ class _CounterPageState extends State<CounterPage> {
             },
           ),
           const SizedBox(height: 16),
-          DropdownButtonFormField<int>(
-            value: _targetCount,
-            isExpanded: true,
-            decoration: InputDecoration(
-              labelText: _isBangla ? "লক্ষ্য সংখ্যা" : "Target Count",
-              labelStyle: const TextStyle(fontSize: 14),
-              border: const OutlineInputBorder(),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: primaryGreen.withOpacity(0.3)),
+          if (!_currentDhikr.isGeneral)
+            DropdownButtonFormField<int>(
+              value: _targetCount > 200 ? 33 : _targetCount,
+              isExpanded: true,
+              decoration: InputDecoration(
+                labelText: _isBangla ? "লক্ষ্য সংখ্যা" : "Target Count",
+                labelStyle: const TextStyle(fontSize: 14),
+                border: const OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: primaryGreen.withOpacity(0.3)),
+                ),
               ),
+              dropdownColor: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
+              style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black, fontSize: 15),
+              items: List.generate(200, (index) => index + 1)
+                  .map((e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(_formatNumber(e.toString())),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                if (value == null) return;
+                setState(() {
+                  _targetCount = value;
+                  if (_counter > _targetCount) _counter = _targetCount;
+                });
+              },
             ),
-            dropdownColor: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
-            style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black, fontSize: 15),
-            items: List.generate(200, (index) => index + 1)
-                .map((e) => DropdownMenuItem(
-                      value: e,
-                      child: Text(_formatNumber(e.toString())),
-                    ))
-                .toList(),
-            onChanged: (value) {
-              if (value == null) return;
-              setState(() {
-                _targetCount = value;
-                if (_counter > _targetCount) _counter = _targetCount;
-              });
-            },
-          ),
         ],
       ),
     );
@@ -450,36 +476,42 @@ class _CounterPageState extends State<CounterPage> {
       ),
       child: Column(
         children: [
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              _isBangla ? _currentDhikr.uccharonBn : _currentDhikr.uccharonEn,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: widget.isDarkMode ? Colors.white : Colors.black87,
+          if (!_currentDhikr.isGeneral) ...[
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                _isBangla ? _currentDhikr.uccharonBn : _currentDhikr.uccharonEn,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: widget.isDarkMode ? Colors.white : Colors.black87,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 4),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              _isBangla ? _currentDhikr.orthoBn : _currentDhikr.orthoEn,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: widget.isDarkMode ? Colors.white60 : Colors.black54,
-                fontStyle: FontStyle.italic,
+            const SizedBox(height: 4),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                _isBangla ? _currentDhikr.orthoBn : _currentDhikr.orthoEn,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: widget.isDarkMode ? Colors.white60 : Colors.black54,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            "${_formatNumber(_counter.toString())} / ${_formatNumber(_targetCount.toString())}",
-            style: TextStyle(color: primaryGreen, fontWeight: FontWeight.bold, fontSize: 18),
-          ),
+            const SizedBox(height: 12),
+            Text(
+              "${_formatNumber(_counter.toString())} / ${_formatNumber(_targetCount.toString())}",
+              style: TextStyle(color: primaryGreen, fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+          ] else
+            Text(
+              _isBangla ? "মোট গণনা" : "Total Count",
+              style: TextStyle(color: primaryGreen, fontWeight: FontWeight.bold, fontSize: 18),
+            ),
           const SizedBox(height: 10),
           FittedBox(
             fit: BoxFit.scaleDown,
@@ -503,33 +535,77 @@ class _CounterPageState extends State<CounterPage> {
     );
   }
 
-  Widget _buildActionButtons(Color primaryGreen) {
+  Widget _buildModernActionButtons(Color primaryGreen) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Flexible(child: _actionButton(icon: Icons.remove, color: Colors.redAccent, onPressed: _decrementCounter)),
+        Flexible(
+          child: _modernActionButton(
+            icon: Icons.remove,
+            colors: [Colors.red.shade400, Colors.red.shade700],
+            onPressed: _decrementCounter,
+            size: 56,
+          ),
+        ),
         const SizedBox(width: 20),
-        Flexible(child: _actionButton(icon: Icons.add, color: primaryGreen, isLarge: true, onPressed: _incrementCounter)),
+        Flexible(
+          child: _modernActionButton(
+            icon: Icons.add,
+            colors: [primaryGreen, Colors.green.shade800],
+            onPressed: _incrementCounter,
+            size: 80,
+            isLarge: true,
+          ),
+        ),
         const SizedBox(width: 20),
-        Flexible(child: _actionButton(icon: Icons.refresh, color: Colors.orange.shade700, onPressed: _resetCounter)),
+        Flexible(
+          child: _modernActionButton(
+            icon: Icons.refresh,
+            colors: [Colors.orange.shade700, Colors.orange.shade900],
+            onPressed: _resetCounter,
+            size: 56,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _actionButton({required IconData icon, required Color color, required VoidCallback onPressed, bool isLarge = false}) {
+  Widget _modernActionButton({
+    required IconData icon,
+    required List<Color> colors,
+    required VoidCallback onPressed,
+    required double size,
+    bool isLarge = false,
+  }) {
     return Container(
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        boxShadow: [BoxShadow(color: color.withOpacity(0.2), blurRadius: 12, offset: const Offset(0, 4))],
-      ),
-      child: IconButton.filled(
-        style: IconButton.styleFrom(
-          backgroundColor: color,
-          foregroundColor: Colors.white,
-          padding: EdgeInsets.all(isLarge ? 20 : 12),
+        gradient: LinearGradient(
+          colors: colors,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        onPressed: onPressed,
-        icon: Icon(icon, size: isLarge ? 36 : 26),
+        boxShadow: [
+          BoxShadow(
+            color: colors.last.withOpacity(0.4),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          customBorder: const CircleBorder(),
+          child: Icon(
+            icon,
+            color: Colors.white,
+            size: isLarge ? 36 : 26,
+          ),
+        ),
       ),
     );
   }
