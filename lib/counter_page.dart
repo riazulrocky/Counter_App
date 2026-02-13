@@ -38,6 +38,7 @@ class CounterPage extends StatefulWidget {
 class _CounterPageState extends State<CounterPage> {
   int _counter = 0;
   bool _isBangla = true;
+  int _selectedIndex = 0; // Current Tab Index
 
   final List<DhikrData> _allDhikrs = const [
     DhikrData(
@@ -167,6 +168,14 @@ class _CounterPageState extends State<CounterPage> {
     final mediaQuery = MediaQuery.of(context);
     final double screenWidth = mediaQuery.size.width;
 
+    // Content mapping based on Bottom Nav Index
+    Widget mainContent;
+    if (_selectedIndex == 0) {
+      mainContent = _buildCounterBody(primaryGreen, animationDuration, screenWidth);
+    } else {
+      mainContent = AboutDeveloperPage(isDarkMode: widget.isDarkMode);
+    }
+
     return AnimatedContainer(
       duration: animationDuration,
       decoration: BoxDecoration(
@@ -174,65 +183,100 @@ class _CounterPageState extends State<CounterPage> {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        extendBodyBehindAppBar: true,
+        extendBodyBehindAppBar: _selectedIndex == 0,
         drawer: _buildDrawer(primaryGreen),
-        appBar: AppBar(
-          elevation: 0,
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          iconTheme: IconThemeData(color: widget.isDarkMode ? Colors.white : primaryGreen),
-          title: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                _isBangla ? "ডিজিটাল তাসবিহ" : "Digital Tasbih",
-                style: TextStyle(
-                  color: widget.isDarkMode ? Colors.white : primaryGreen,
-                  fontSize: screenWidth < 360 ? 16 : 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Container(
-                height: 3,
-                width: 25,
-                margin: const EdgeInsets.only(top: 4),
-                decoration: BoxDecoration(
-                  color: widget.isDarkMode ? Colors.white.withOpacity(0.5) : primaryGreen.withOpacity(0.4),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ],
-          ),
-        ),
-        body: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 400),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Settings Card
-                        _buildSettingsCard(primaryGreen, animationDuration),
-                        const SizedBox(height: 20),
-                        // Counter Display Card
-                        _buildCounterCard(primaryGreen, animationDuration),
-                        const SizedBox(height: 30),
-                        // Buttons
-                        _buildActionButtons(primaryGreen),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }
-          ),
+        appBar: _buildAppBar(primaryGreen, screenWidth),
+        body: SafeArea(child: mainContent),
+        
+        // --- ADDING BOTTOM NAVIGATION BAR ---
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          backgroundColor: widget.isDarkMode ? const Color(0xFF0F172A) : Colors.white,
+          selectedItemColor: primaryGreen,
+          unselectedItemColor: Colors.grey,
+          showUnselectedLabels: true,
+          type: BottomNavigationBarType.fixed,
+          items: [
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.home),
+              label: _isBangla ? "হোম" : "Home",
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.person),
+              label: _isBangla ? "ডেভেলপার" : "Developer",
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(Color primaryGreen, double screenWidth) {
+    String title;
+    if (_selectedIndex == 0) {
+      title = _isBangla ? "ডিজিটাল তাসবিহ" : "Digital Tasbih";
+    } else {
+      title = _isBangla ? "ডেভেলপার সম্পর্কে" : "About Developer";
+    }
+
+    return AppBar(
+      elevation: 0,
+      centerTitle: true,
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      iconTheme: IconThemeData(color: widget.isDarkMode ? Colors.white : primaryGreen),
+      title: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: widget.isDarkMode ? Colors.white : primaryGreen,
+              fontSize: screenWidth < 360 ? 16 : 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Container(
+            height: 3,
+            width: 25,
+            margin: const EdgeInsets.only(top: 4),
+            decoration: BoxDecoration(
+              color: widget.isDarkMode ? Colors.white.withOpacity(0.5) : primaryGreen.withOpacity(0.4),
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCounterBody(Color primaryGreen, Duration animationDuration, double screenWidth) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildSettingsCard(primaryGreen, animationDuration),
+                  const SizedBox(height: 20),
+                  _buildCounterCard(primaryGreen, animationDuration),
+                  const SizedBox(height: 30),
+                  _buildActionButtons(primaryGreen),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
     );
   }
 
@@ -295,24 +339,6 @@ class _CounterPageState extends State<CounterPage> {
             onTap: () {
               widget.onToggleTheme();
               Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.person, color: primaryGreen),
-            title: Text(
-              _isBangla ? "ডেভেলপার সম্পর্কে" : "About Developer",
-              style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black87),
-            ),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AboutDeveloperPage(
-                    isDarkMode: widget.isDarkMode,
-                  ),
-                ),
-              );
             },
           ),
           const Divider(),
