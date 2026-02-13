@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'about_developer.dart';
+import 'prayer_times_page.dart';
 
 class DhikrData {
   final String nameBn;
@@ -38,7 +39,7 @@ class CounterPage extends StatefulWidget {
 class _CounterPageState extends State<CounterPage> {
   int _counter = 0;
   bool _isBangla = true;
-  int _selectedIndex = 0; // Current Tab Index
+  int _selectedIndex = 0;
 
   final List<DhikrData> _allDhikrs = const [
     DhikrData(
@@ -168,10 +169,11 @@ class _CounterPageState extends State<CounterPage> {
     final mediaQuery = MediaQuery.of(context);
     final double screenWidth = mediaQuery.size.width;
 
-    // Content mapping based on Bottom Nav Index
     Widget mainContent;
     if (_selectedIndex == 0) {
       mainContent = _buildCounterBody(primaryGreen, animationDuration, screenWidth);
+    } else if (_selectedIndex == 1) {
+      mainContent = PrayerTimesPage(isDarkMode: widget.isDarkMode, isBangla: _isBangla);
     } else {
       mainContent = AboutDeveloperPage(isDarkMode: widget.isDarkMode);
     }
@@ -183,12 +185,11 @@ class _CounterPageState extends State<CounterPage> {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        extendBodyBehindAppBar: _selectedIndex == 0,
+        extendBodyBehindAppBar: true,
         drawer: _buildDrawer(primaryGreen),
         appBar: _buildAppBar(primaryGreen, screenWidth),
         body: SafeArea(child: mainContent),
         
-        // --- ADDING BOTTOM NAVIGATION BAR ---
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: (index) {
@@ -207,6 +208,10 @@ class _CounterPageState extends State<CounterPage> {
               label: _isBangla ? "হোম" : "Home",
             ),
             BottomNavigationBarItem(
+              icon: const Icon(Icons.access_time),
+              label: _isBangla ? "নামাজ" : "Prayer",
+            ),
+            BottomNavigationBarItem(
               icon: const Icon(Icons.person),
               label: _isBangla ? "ডেভেলপার" : "Developer",
             ),
@@ -220,6 +225,8 @@ class _CounterPageState extends State<CounterPage> {
     String title;
     if (_selectedIndex == 0) {
       title = _isBangla ? "ডিজিটাল তাসবিহ" : "Digital Tasbih";
+    } else if (_selectedIndex == 1) {
+      title = _isBangla ? "নামাজের সময়" : "Prayer Times";
     } else {
       title = _isBangla ? "ডেভেলপার সম্পর্কে" : "About Developer";
     }
@@ -266,6 +273,7 @@ class _CounterPageState extends State<CounterPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  const SizedBox(height: 5), // Reduced space
                   _buildSettingsCard(primaryGreen, animationDuration),
                   const SizedBox(height: 20),
                   _buildCounterCard(primaryGreen, animationDuration),

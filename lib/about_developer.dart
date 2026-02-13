@@ -11,18 +11,12 @@ class AboutDeveloperPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: isDarkMode ? const Color(0xFF020617) : const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        title: const Text("About Developer"),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        foregroundColor: isDarkMode ? Colors.white : primaryGreen,
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Center(
           child: Column(
             children: [
+              const SizedBox(height: 20),
               // Developer Image
               Container(
                 width: 180,
