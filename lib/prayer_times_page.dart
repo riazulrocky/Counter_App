@@ -43,7 +43,6 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
   String _toBn(String input) {
     if (!widget.isBangla) return input;
     
-    // Using a more robust replacement strategy to avoid partial matches
     final Map<String, String> monthMap = {
       'January': 'জানুয়ারি', 'February': 'ফেব্রুয়ারি', 'March': 'মার্চ', 'April': 'এপ্রিল', 'May': 'মে', 'June': 'জুন', 'July': 'জুলাই', 'August': 'আগস্ট', 'September': 'সেপ্টেম্বর', 'October': 'অক্টোবর', 'November': 'নভেম্বর', 'December': 'ডিসেম্বর'
     };
@@ -57,8 +56,6 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
     };
 
     String output = input;
-    
-    // Replace full words first
     monthMap.forEach((eng, bng) => output = output.replaceAll(eng, bng));
     dayMap.forEach((eng, bng) => output = output.replaceAll(eng, bng));
     digitMap.forEach((eng, bng) => output = output.replaceAll(eng, bng));
@@ -111,7 +108,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
         child: Column(
           children: [
-            const SizedBox(height: 10), // Matched with Digital Tajbih page
+            const SizedBox(height: 10), 
             Card(
               elevation: 4,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -121,7 +118,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                 child: Column(
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.center, // Centered
                       children: [
                         DropdownButton<String>(
                           value: _selectedCity == 'Auto' ? null : _selectedCity,
@@ -138,10 +135,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                             _currentPosition = null;
                           }),
                         ),
-                        IconButton(
-                          icon: Icon(Icons.my_location, color: primaryGreen),
-                          onPressed: _getCurrentLocation,
-                        ),
+                        // Location icon removed
                       ],
                     ),
                     if (_isLoading) const LinearProgressIndicator(),
@@ -199,7 +193,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
         final date = DateTime.now().add(Duration(days: index + 1));
         final times = _getPrayerTimes(date);
         return ExpansionTile(
-          title: Text(_toBn(DateFormat('EEEE, d MMMM').format(date))), // Full Day and Month name
+          title: Text(_toBn(DateFormat('EEEE, d MMMM').format(date))),
           children: [
             _buildSmallTime(widget.isBangla ? "ফজর" : "Fajr", times.fajr),
             _buildSmallTime(widget.isBangla ? "যোহর" : "Dhuhr", times.dhuhr),
