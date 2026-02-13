@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'about_developer.dart';
 import 'prayer_times_page.dart';
 import 'ramadan_page.dart';
+import 'zakat_calculator_page.dart';
 
 class DhikrData {
   final String nameBn;
@@ -175,6 +176,59 @@ class _CounterPageState extends State<CounterPage> {
     });
   }
 
+  void _showDhikrPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: widget.isDarkMode ? const Color(0xFF0F172A) : Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  _isBangla ? "যিকির নির্বাচন করুন" : "Select Dhikr",
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _allDhikrs.length,
+                  itemBuilder: (context, index) {
+                    final dhikr = _allDhikrs[index];
+                    return ListTile(
+                      title: Text(
+                        _isBangla ? dhikr.nameBn : dhikr.nameEn,
+                        style: TextStyle(
+                          color: _currentDhikr == dhikr ? Colors.green.shade600 : null,
+                          fontWeight: _currentDhikr == dhikr ? FontWeight.bold : null,
+                        ),
+                      ),
+                      trailing: _currentDhikr == dhikr ? Icon(Icons.check_circle, color: Colors.green.shade600) : null,
+                      onTap: () {
+                        setState(() {
+                          _currentDhikr = dhikr;
+                          _targetCount = dhikr.defaultCount;
+                          _counter = 0;
+                        });
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final primaryGreen = Colors.green.shade600;
@@ -193,8 +247,11 @@ class _CounterPageState extends State<CounterPage> {
       case 2:
         mainContent = PrayerTimesPage(isDarkMode: widget.isDarkMode, isBangla: _isBangla);
         break;
+      case 3:
+        mainContent = ZakatCalculatorPage(isDarkMode: widget.isDarkMode, isBangla: _isBangla);
+        break;
       default:
-        mainContent = AboutDeveloperPage(isDarkMode: widget.isDarkMode);
+        mainContent = _buildCounterBody(primaryGreen, animationDuration, screenWidth);
     }
 
     return AnimatedContainer(
@@ -235,8 +292,8 @@ class _CounterPageState extends State<CounterPage> {
               label: _isBangla ? "নামাজ" : "Prayer",
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.person),
-              label: _isBangla ? "ডেভেলপার" : "Developer",
+              icon: const Icon(Icons.calculate),
+              label: _isBangla ? "যাকাত" : "Zakat",
             ),
           ],
         ),
@@ -246,14 +303,12 @@ class _CounterPageState extends State<CounterPage> {
 
   PreferredSizeWidget _buildAppBar(Color primaryGreen, double screenWidth) {
     String title;
-    if (_selectedIndex == 0) {
-      title = _isBangla ? "ডিজিটাল তাসবিহ" : "Digital Tasbih";
-    } else if (_selectedIndex == 1) {
-      title = _isBangla ? "রমজান ক্যালেন্ডার" : "Ramadan Calendar";
-    } else if (_selectedIndex == 2) {
-      title = _isBangla ? "নামাজের সময়" : "Prayer Times";
-    } else {
-      title = _isBangla ? "ডেভেলপার সম্পর্কে" : "About Developer";
+    switch (_selectedIndex) {
+      case 0: title = _isBangla ? "🌙 নূরিফাই" : "🌙 Noorify"; break; // Icon added before name
+      case 1: title = _isBangla ? "রমজান ক্যালেন্ডার" : "Ramadan Calendar"; break;
+      case 2: title = _isBangla ? "নামাজের সময়" : "Prayer Times"; break;
+      case 3: title = _isBangla ? "যাকাত ক্যালকুলেটর" : "Zakat Calculator"; break;
+      default: title = "🌙 Noorify";
     }
 
     return AppBar(
@@ -288,175 +343,87 @@ class _CounterPageState extends State<CounterPage> {
   }
 
   Widget _buildCounterBody(Color primaryGreen, Duration animationDuration, double screenWidth) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 5), 
-                  _buildSettingsCard(primaryGreen, animationDuration),
-                  const SizedBox(height: 20),
-                  _buildCounterCard(primaryGreen, animationDuration),
-                  const SizedBox(height: 30),
-                  _buildModernActionButtons(primaryGreen),
-                ],
-              ),
-            ),
-          ),
-        );
-      }
-    );
-  }
-
-  Widget _buildDrawer(Color primaryGreen) {
-    return Drawer(
-      backgroundColor: widget.isDarkMode ? const Color(0xFF0F172A) : Colors.white,
-      child: Column(
-        children: [
-          DrawerHeader(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [primaryGreen, Colors.green.shade800],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.fingerprint, color: Colors.white, size: 40),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 400),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 5), 
+              InkWell(
+                onTap: _showDhikrPicker,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    _isBangla ? "ডিজিটাল তাসবিহ" : "Digital Tasbih",
-                    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  child: Row(
+                    children: [
+                      Icon(Icons.auto_awesome, color: primaryGreen),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(_isBangla ? "যিকির" : "Dhikr", style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                            Text(_isBangla ? _currentDhikr.nameBn : _currentDhikr.nameEn, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.keyboard_arrow_down, color: primaryGreen),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+              const SizedBox(height: 16),
+              if (!_currentDhikr.isGeneral)
+                _buildTargetCountSelector(primaryGreen),
+              const SizedBox(height: 20),
+              _buildCounterCard(primaryGreen, animationDuration),
+              const SizedBox(height: 30),
+              _buildModernActionButtons(primaryGreen),
+            ],
           ),
-          ListTile(
-            leading: Icon(Icons.language, color: primaryGreen),
-            title: Text(
-              _isBangla ? "Switch to English" : "বাংলা ভাষা করুন",
-              style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black87),
-            ),
-            onTap: () {
-              _toggleLanguage();
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: Icon(
-              widget.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-              color: primaryGreen,
-            ),
-            title: Text(
-              _isBangla 
-                  ? (widget.isDarkMode ? "লাইট মোড" : "ডার্ক মোড")
-                  : (widget.isDarkMode ? "Light Mode" : "Dark Mode"),
-              style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black87),
-            ),
-            onTap: () {
-              widget.onToggleTheme();
-              Navigator.pop(context);
-            },
-          ),
-          const Divider(),
-          const Spacer(),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              "Version 1.0.0",
-              style: TextStyle(color: widget.isDarkMode ? Colors.white38 : Colors.grey, fontSize: 12),
-            ),
-          )
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildSettingsCard(Color primaryGreen, Duration duration) {
-    return AnimatedContainer(
-      duration: duration,
-      padding: const EdgeInsets.all(16.0),
+  Widget _buildTargetCountSelector(Color primaryGreen) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
       ),
-      child: Column(
-        children: [
-          DropdownButtonFormField<DhikrData>(
-            value: _currentDhikr,
-            isExpanded: true,
-            decoration: InputDecoration(
-              labelText: _isBangla ? "যিকির" : "Dhikr",
-              labelStyle: const TextStyle(fontSize: 14),
-              border: const OutlineInputBorder(),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: primaryGreen.withOpacity(0.3)),
-              ),
-            ),
-            dropdownColor: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
-            style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black, fontSize: 15),
-            items: _allDhikrs.map((dhikr) => DropdownMenuItem(
-              value: dhikr,
-              child: Text(_isBangla ? dhikr.nameBn : dhikr.nameEn, overflow: TextOverflow.ellipsis),
-            )).toList(),
-            onChanged: (value) {
-              if (value == null) return;
-              setState(() {
-                _currentDhikr = value;
-                _targetCount = value.defaultCount;
-                _counter = 0;
-              });
-            },
-          ),
-          const SizedBox(height: 16),
-          if (!_currentDhikr.isGeneral)
-            DropdownButtonFormField<int>(
-              value: _targetCount > 200 ? 33 : _targetCount,
-              isExpanded: true,
-              decoration: InputDecoration(
-                labelText: _isBangla ? "লক্ষ্য সংখ্যা" : "Target Count",
-                labelStyle: const TextStyle(fontSize: 14),
-                border: const OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: primaryGreen.withOpacity(0.3)),
-                ),
-              ),
-              dropdownColor: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
-              style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black, fontSize: 15),
-              items: List.generate(200, (index) => index + 1)
-                  .map((e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(_formatNumber(e.toString())),
-                      ))
-                  .toList(),
-              onChanged: (value) {
-                if (value == null) return;
-                setState(() {
-                  _targetCount = value;
-                  if (_counter > _targetCount) _counter = _targetCount;
-                });
-              },
-            ),
-        ],
+      child: DropdownButtonFormField<int>(
+        value: _targetCount > 200 ? 33 : _targetCount,
+        isExpanded: true,
+        decoration: InputDecoration(
+          labelText: _isBangla ? "লক্ষ্য সংখ্যা" : "Target Count",
+          labelStyle: const TextStyle(fontSize: 14),
+          border: InputBorder.none,
+        ),
+        dropdownColor: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
+        style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black, fontSize: 15),
+        items: List.generate(200, (index) => index + 1)
+            .map((e) => DropdownMenuItem(
+                  value: e,
+                  child: Text(_formatNumber(e.toString())),
+                ))
+            .toList(),
+        onChanged: (value) {
+          if (value == null) return;
+          setState(() {
+            _targetCount = value;
+            if (_counter > _targetCount) _counter = _targetCount;
+          });
+        },
       ),
     );
   }
@@ -582,11 +549,6 @@ class _CounterPageState extends State<CounterPage> {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: LinearGradient(
-          colors: colors,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
         boxShadow: [
           BoxShadow(
             color: colors.last.withOpacity(0.4),
@@ -600,12 +562,113 @@ class _CounterPageState extends State<CounterPage> {
         child: InkWell(
           onTap: onPressed,
           customBorder: const CircleBorder(),
-          child: Icon(
-            icon,
-            color: Colors.white,
-            size: isLarge ? 36 : 26,
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: colors,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: isLarge ? 36 : 26,
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildDrawer(Color primaryGreen) {
+    return Drawer(
+      backgroundColor: widget.isDarkMode ? const Color(0xFF0F172A) : Colors.white,
+      child: Column(
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [primaryGreen, Colors.green.shade800],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Text("🌙", style: TextStyle(fontSize: 40)),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    _isBangla ? "নূরিফাই" : "Noorify",
+                    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.language, color: primaryGreen),
+            title: Text(
+              _isBangla ? "Switch to English" : "বাংলা ভাষা করুন",
+              style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black87),
+            ),
+            onTap: () {
+              _toggleLanguage();
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: Icon(
+              widget.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+              color: primaryGreen,
+            ),
+            title: Text(
+              _isBangla 
+                  ? (widget.isDarkMode ? "লাইট মোড" : "ডার্ক মোড")
+                  : (widget.isDarkMode ? "Light Mode" : "Dark Mode"),
+              style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black87),
+            ),
+            onTap: () {
+              widget.onToggleTheme();
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.person, color: primaryGreen),
+            title: Text(
+              _isBangla ? "ডেভেলপার সম্পর্কে" : "About Developer",
+              style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black87),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AboutDeveloperPage(isDarkMode: widget.isDarkMode),
+                ),
+              );
+            },
+          ),
+          const Divider(),
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              "Version 1.0.0",
+              style: TextStyle(color: widget.isDarkMode ? Colors.white38 : Colors.grey, fontSize: 12),
+            ),
+          )
+        ],
       ),
     );
   }

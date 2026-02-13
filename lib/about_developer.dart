@@ -11,82 +11,87 @@ class AboutDeveloperPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: isDarkMode ? const Color(0xFF020617) : const Color(0xFFF8FAFC),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Center(
-            child: Column(
-              children: [
-                const SizedBox(height: 10), // Reduced unused space
-                // Developer Image
-                Container(
-                  width: 180,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: primaryGreen, width: 4),
-                    boxShadow: [
-                      BoxShadow(
-                        color: primaryGreen.withOpacity(0.2),
-                        blurRadius: 20,
-                        spreadRadius: 5,
-                      )
-                    ],
-                    image: const DecorationImage(
-                      image: AssetImage('assets/developer.png'),
-                      fit: BoxFit.cover,
-                    ),
+      appBar: AppBar(
+        title: const Text("About Developer"),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        foregroundColor: isDarkMode ? Colors.white : primaryGreen,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Center(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              // Developer Image
+              Container(
+                width: 180,
+                height: 180,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: primaryGreen, width: 4),
+                  boxShadow: [
+                    BoxShadow(
+                      color: primaryGreen.withOpacity(0.2),
+                      blurRadius: 20,
+                      spreadRadius: 5,
+                    )
+                  ],
+                  image: const DecorationImage(
+                    image: AssetImage('assets/developer.png'),
+                    fit: BoxFit.cover,
                   ),
                 ),
-                const SizedBox(height: 30),
-                // Name
-                Text(
-                  "Riazul Hasan Rocky",
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.white : Colors.black87,
-                  ),
+              ),
+              const SizedBox(height: 30),
+              // Name
+              Text(
+                "Riazul Hasan Rocky",
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: isDarkMode ? Colors.white : Colors.black87,
                 ),
-                const SizedBox(height: 10),
-                // Profession/Status
-                Text(
-                  "Android App Developer",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: primaryGreen,
-                    fontWeight: FontWeight.w500,
-                  ),
+              ),
+              const SizedBox(height: 10),
+              // Profession/Status
+              Text(
+                "Android App Developer",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: primaryGreen,
+                  fontWeight: FontWeight.w500,
                 ),
-                const SizedBox(height: 30),
-                const Divider(),
-                const SizedBox(height: 20),
-                // University Info
-                _buildInfoTile(
-                  icon: Icons.account_balance,
-                  title: "University",
-                  value: "Northern University Bangladesh",
-                  isDarkMode: isDarkMode,
-                  primaryColor: primaryGreen,
+              ),
+              const SizedBox(height: 30),
+              const Divider(),
+              const SizedBox(height: 20),
+              // University Info
+              _buildInfoTile(
+                icon: Icons.account_balance,
+                title: "University",
+                value: "Northern University Bangladesh",
+                isDarkMode: isDarkMode,
+                primaryColor: primaryGreen,
+              ),
+              _buildInfoTile(
+                icon: Icons.computer,
+                title: "Department",
+                value: "Computer Science & Engineering",
+                isDarkMode: isDarkMode,
+                primaryColor: primaryGreen,
+              ),
+              const SizedBox(height: 40),
+              Text(
+                "Thank you for using Digital Tasbih!",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white54 : Colors.grey,
+                  fontStyle: FontStyle.italic,
                 ),
-                _buildInfoTile(
-                  icon: Icons.computer,
-                  title: "Department",
-                  value: "Computer Science & Engineering",
-                  isDarkMode: isDarkMode,
-                  primaryColor: primaryGreen,
-                ),
-                const SizedBox(height: 40),
-                Text(
-                  "Thank you for using Digital Tasbih!",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: isDarkMode ? Colors.white54 : Colors.grey,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

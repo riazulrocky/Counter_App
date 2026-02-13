@@ -254,7 +254,7 @@ class _RamadanPageState extends State<RamadanPage> {
               ),
             ),
             const SizedBox(height: 20),
-            // Timer Card
+            // Countdown Timer Card
             _buildTimerCard(primaryGreen),
             const SizedBox(height: 30),
             // Calendar Table
