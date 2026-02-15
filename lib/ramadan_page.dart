@@ -13,16 +13,22 @@ class RamadanDay {
 class RamadanPage extends StatefulWidget {
   final bool isDarkMode;
   final bool isBangla;
+  final String selectedCity;
+  final Function(String) onLocationChanged;
 
-  const RamadanPage({super.key, required this.isDarkMode, required this.isBangla});
+  const RamadanPage({
+    super.key, 
+    required this.isDarkMode, 
+    required this.isBangla,
+    required this.selectedCity,
+    required this.onLocationChanged,
+  });
 
   @override
   State<RamadanPage> createState() => _RamadanPageState();
 }
 
 class _RamadanPageState extends State<RamadanPage> {
-  String _selectedCity = 'Dhaka';
-  
   final Map<String, int> _cityAdjustments = {
     'Dhaka': 0, 'Chattogram': -5, 'Sylhet': -6, 'Rajshahi': 7, 
     'Khulna': 3, 'Barisal': 1, 'Rangpur': 6, 'Mymensingh': -1
@@ -106,26 +112,27 @@ class _RamadanPageState extends State<RamadanPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              Expanded(
+              Flexible(
                 child: GridView.count(
+                  shrinkWrap: true,
                   crossAxisCount: 2,
                   childAspectRatio: 3,
                   children: _cityAdjustments.keys.map((city) {
                     return InkWell(
                       onTap: () {
-                        setState(() => _selectedCity = city);
+                        widget.onLocationChanged(city);
                         Navigator.pop(context);
                       },
                       child: Container(
                         margin: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: _selectedCity == city ? Colors.green.shade600 : (widget.isDarkMode ? Colors.white10 : Colors.grey.shade100),
+                          color: widget.selectedCity == city ? Colors.green.shade600 : (widget.isDarkMode ? Colors.white10 : Colors.grey.shade100),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         alignment: Alignment.center,
                         child: Text(
                           widget.isBangla ? _cityNamesBn[city]! : city,
-                          style: TextStyle(color: _selectedCity == city ? Colors.white : (widget.isDarkMode ? Colors.white70 : Colors.black87), fontWeight: FontWeight.bold),
+                          style: TextStyle(color: widget.selectedCity == city ? Colors.white : (widget.isDarkMode ? Colors.white70 : Colors.black87), fontWeight: FontWeight.bold),
                         ),
                       ),
                     );
@@ -169,7 +176,7 @@ class _RamadanPageState extends State<RamadanPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(widget.isBangla ? "লোকেশন" : "Location", style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                          Text(widget.isBangla ? _cityNamesBn[_selectedCity]! : _selectedCity, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          Text(widget.isBangla ? _cityNamesBn[widget.selectedCity]! : widget.selectedCity, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
@@ -218,7 +225,7 @@ class _RamadanPageState extends State<RamadanPage> {
   }
 
   Widget _buildDataRow(RamadanDay day, Color primaryGreen) {
-    int adj = _cityAdjustments[_selectedCity] ?? 0;
+    int adj = _cityAdjustments[widget.selectedCity] ?? 0;
     return Container(
       decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey.withOpacity(0.1)))),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),

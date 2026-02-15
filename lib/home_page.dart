@@ -3,15 +3,33 @@ import 'package:flutter/material.dart';
 import 'allah_names_page.dart';
 import 'ramadan_page.dart';
 
+class QuranVerse {
+  final String textBn;
+  final String textEn;
+  final String referenceBn;
+  final String referenceEn;
+
+  const QuranVerse({
+    required this.textBn,
+    required this.textEn,
+    required this.referenceBn,
+    required this.referenceEn,
+  });
+}
+
 class HomePage extends StatefulWidget {
   final bool isDarkMode;
   final bool isBangla;
+  final String selectedCity;
+  final Function(String) onLocationChanged;
   final Function(int) onNavigate;
 
   const HomePage({
     super.key,
     required this.isDarkMode,
     required this.isBangla,
+    required this.selectedCity,
+    required this.onLocationChanged,
     required this.onNavigate,
   });
 
@@ -23,11 +41,15 @@ class _HomePageState extends State<HomePage> {
   late Timer _timer;
   Duration _timeLeft = Duration.zero;
   String _nextEvent = "";
-  final String _selectedCity = 'Dhaka';
 
   final Map<String, int> _cityAdjustments = {
     'Dhaka': 0, 'Chattogram': -5, 'Sylhet': -6, 'Rajshahi': 7,
     'Khulna': 3, 'Barisal': 1, 'Rangpur': 6, 'Mymensingh': -1
+  };
+
+  final Map<String, String> _cityNamesBn = {
+    'Dhaka': 'ঢাকা', 'Chattogram': 'চট্টগ্রাম', 'Sylhet': 'সিলেট', 'Rajshahi': 'রাজশাহী',
+    'Khulna': 'খুলনা', 'Barisal': 'বরিশাল', 'Rangpur': 'রংপুর', 'Mymensingh': 'ময়মনসিংহ',
   };
 
   final List<RamadanDay> _ramadanData = [
@@ -63,6 +85,189 @@ class _HomePageState extends State<HomePage> {
     RamadanDay(ramadan: 30, date: DateTime(2026, 3, 19), sehri: "04:46", iftar: "18:17"),
   ];
 
+  final List<QuranVerse> _dailyVerses = const [
+    QuranVerse(
+      textBn: "নিশ্চয়ই কষ্টের সাথেই স্বস্তি রয়েছে।",
+      textEn: "Indeed, with hardship [will be] ease.",
+      referenceBn: "সূরা ইনশিরাহ্: ৫",
+      referenceEn: "Surah Ash-Sharh: 5",
+    ),
+    QuranVerse(
+      textBn: "তোমরা আমাকে স্মরণ করো, আমিও তোমাদের স্মরণ করব।",
+      textEn: "Remember Me; I will remember you.",
+      referenceBn: "সূরা আল-বাকারা: ১৫২",
+      referenceEn: "Surah Al-Baqarah: 152",
+    ),
+    QuranVerse(
+      textBn: "আর আল্লাহ তোমাদের যা দিয়েছেন তার জন্য আনন্দিত হয়ো।",
+      textEn: "And be grateful for the graces of Allah.",
+      referenceBn: "সূরা আন-নাহল: ১১৪",
+      referenceEn: "Surah An-Nahl: 114",
+    ),
+    QuranVerse(
+      textBn: "নিশ্চয়ই আল্লাহ ধৈর্যশীলদের সাথে আছেন।",
+      textEn: "Indeed, Allah is with the patient.",
+      referenceBn: "সূরা আল-বাকারা: ১৫৩",
+      referenceEn: "Surah Al-Baqarah: 153",
+    ),
+    QuranVerse(
+      textBn: "আমার বান্দারা যখন আমার সম্পর্কে তোমাকে জিজ্ঞাসা করে, আমি তো তাদের নিকটেই আছি।",
+      textEn: "When My servants ask you concerning Me, indeed I am near.",
+      referenceBn: "সূরা আল-বাকারা: ১৮৬",
+      referenceEn: "Surah Al-Baqarah: 186",
+    ),
+    QuranVerse(
+      textBn: "তিনিই তোমাদের জন্য পৃথিবীকে সুগম করেছেন।",
+      textEn: "It is He who made the earth tame for you.",
+      referenceBn: "সূরা আল-মূলক: ১৫",
+      referenceEn: "Surah Al-Mulk: 15",
+    ),
+    QuranVerse(
+      textBn: "আল্লাহ কোনো প্রাণীকে তার সাধ্যের বাইরে কষ্ট দেন না।",
+      textEn: "Allah does not charge a soul except [with that within] its capacity.",
+      referenceBn: "সূরা আল-বাকারা: ২৮৬",
+      referenceEn: "Surah Al-Baqarah: 286",
+    ),
+    QuranVerse(
+      textBn: "আর তারা চক্রান্ত করে এবং আল্লাহও কৌশল করেন, আর আল্লাহই শ্রেষ্ঠ কৌশলী।",
+      textEn: "And they planned, and Allah planned. And Allah is the best of planners.",
+      referenceBn: "সূরা আল-ইমরান: ৫৪",
+      referenceEn: "Surah Al-Imran: 54",
+    ),
+    QuranVerse(
+      textBn: "আল্লাহর রহমত থেকে নিরাশ হয়ো না।",
+      textEn: "Do not despair of the mercy of Allah.",
+      referenceBn: "সূরা আজ-জুমার: ৫৩",
+      referenceEn: "Surah Az-Zumar: 53",
+    ),
+    QuranVerse(
+      textBn: "নিশ্চয়ই সালাত অশ্লীল ও মন্দ কাজ থেকে বিরত রাখে।",
+      textEn: "Indeed, prayer prohibits immorality and wrongdoing.",
+      referenceBn: "সূরা আল-আনকাবুত: ৪৫",
+      referenceEn: "Surah Al-Ankabut: 45",
+    ),
+    QuranVerse(
+      textBn: "তোমরা সত্যকে মিথ্যার সাথে মিশ্রিত করো না।",
+      textEn: "And do not mix the truth with falsehood.",
+      referenceBn: "সূরা আল-বাকারা: ৪২",
+      referenceEn: "Surah Al-Baqarah: 42",
+    ),
+    QuranVerse(
+      textBn: "আল্লাহ যাকে ইচ্ছা অপরিমিত রিযিক দান করেন।",
+      textEn: "Allah gives provision to whom He wills without account.",
+      referenceBn: "সূরা আল-বাকারা: ২১২",
+      referenceEn: "Surah Al-Baqarah: 212",
+    ),
+    QuranVerse(
+      textBn: "তোমরা মুমিন না হওয়া পর্যন্ত জান্নাতে প্রবেশ করতে পারবে না।",
+      textEn: "You will not enter Paradise until you believe.",
+      referenceBn: "সহীহ মুসলিম (হাদিস)",
+      referenceEn: "Sahih Muslim (Hadith)",
+    ),
+    QuranVerse(
+      textBn: "আর যে আল্লাহকে ভয় করে, তিনি তার জন্য নিষ্কৃতির পথ করে দেন।",
+      textEn: "And whoever fears Allah - He will make for him a way out.",
+      referenceBn: "সূরা আত-তালাক: ২",
+      referenceEn: "Surah At-Talaq: 2",
+    ),
+    QuranVerse(
+      textBn: "মানুষের জন্য তাই রয়েছে যা সে চেষ্টা করে।",
+      textEn: "And that there is not for man except that [good] for which he strives.",
+      referenceBn: "সূরা আন-নাজম: ৩৯",
+      referenceEn: "Surah An-Najm: 39",
+    ),
+    QuranVerse(
+      textBn: "নিশ্চয়ই আল্লাহ তাওবাকারীদের ভালোবাসেন।",
+      textEn: "Indeed, Allah loves those who are constantly repentant.",
+      referenceBn: "সূরা আল-বাকারা: ২২২",
+      referenceEn: "Surah Al-Baqarah: 222",
+    ),
+    QuranVerse(
+      textBn: "আর তোমরা একে অপরের গীবত করো না।",
+      textEn: "And do not spy or backbite each other.",
+      referenceBn: "সূরা আল-হুজুরাত: ১২",
+      referenceEn: "Surah Al-Hujurat: 12",
+    ),
+    QuranVerse(
+      textBn: "যে ব্যক্তি একটি ভালো কাজ করল, সে তার দশগুণ পাবে।",
+      textEn: "Whoever comes [on the Day of Judgment] with a good deed will have ten times the like thereof.",
+      referenceBn: "সূরা আল-আনআম: ১৬০",
+      referenceEn: "Surah Al-An'am: 160",
+    ),
+    QuranVerse(
+      textBn: "বলুন, সত্য এসেছে এবং মিথ্যা বিলুপ্ত হয়েছে।",
+      textEn: "Say, 'Truth has come, and falsehood has departed.'",
+      referenceBn: "সূরা আল-ইসরা: ৮১",
+      referenceEn: "Surah Al-Isra: 81",
+    ),
+    QuranVerse(
+      textBn: "আল্লাহ সুন্দর এবং তিনি সৌন্দর্যকে পছন্দ করেন।",
+      textEn: "Allah is beautiful and He loves beauty.",
+      referenceBn: "সহীহ মুসলিম (হাদিস)",
+      referenceEn: "Sahih Muslim (Hadith)",
+    ),
+    QuranVerse(
+      textBn: "তোমরা একে অপরের সম্পদ অন্যায়ভাবে গ্রাস করো না।",
+      textEn: "And do not consume one another's wealth unjustly.",
+      referenceBn: "সূরা আল-বাকারা: ১৮৮",
+      referenceEn: "Surah Al-Baqarah: 188",
+    ),
+    QuranVerse(
+      textBn: "আর তোমরা আল্লাহর রশিকে শক্তভাবে আঁকড়ে ধরো।",
+      textEn: "And hold firmly to the rope of Allah all together.",
+      referenceBn: "সূরা আল-ইমরান: ১০৩",
+      referenceEn: "Surah Al-Imran: 103",
+    ),
+    QuranVerse(
+      textBn: "নিশ্চয়ই আল্লাহ অতিশয় ক্ষমাশীল, পরম দয়ালু।",
+      textEn: "Indeed, Allah is Forgiving and Merciful.",
+      referenceBn: "সূরা আন-নিসা: ১১০",
+      referenceEn: "Surah An-Nisa: 110",
+    ),
+    QuranVerse(
+      textBn: "আর নামাজ কায়েম করো এবং যাকাত দাও।",
+      textEn: "And establish prayer and give zakah.",
+      referenceBn: "সূরা আল-বাকারা: ৪৩",
+      referenceEn: "Surah Al-Baqarah: 43",
+    ),
+    QuranVerse(
+      textBn: "হে আমাদের পালনকর্তা, আমাদের দুনিয়া ও আখিরাতে কল্যাণ দান করুন।",
+      textEn: "Our Lord, give us in this world [that which is] good and in the Hereafter [that which is] good.",
+      referenceBn: "সূরা আল-বাকারা: ২০১",
+      referenceEn: "Surah Al-Baqarah: 201",
+    ),
+    QuranVerse(
+      textBn: "সবচেয়ে উত্তম ব্যক্তি সে যে অন্য মানুষের কল্যাণ করে।",
+      textEn: "The best of people are those who are most beneficial to people.",
+      referenceBn: "সহীহ জামে (হাদিস)",
+      referenceEn: "Sahih Jami' (Hadith)",
+    ),
+    QuranVerse(
+      textBn: "যে আল্লাহকে ভয় করে, আল্লাহ তার কাজ সহজ করে দেন।",
+      textEn: "And whoever fears Allah - He will make for him of his matter ease.",
+      referenceBn: "সূরা আত-তালাক: ৪",
+      referenceEn: "Surah At-Talaq: 4",
+    ),
+    QuranVerse(
+      textBn: "আল্লাহর কাছে সবচেয়ে প্রিয় আমল হলো যা নিয়মিত করা হয়।",
+      textEn: "The most beloved of deeds to Allah are those that are most consistent.",
+      referenceBn: "সহীহ বুখারী (হাদিস)",
+      referenceEn: "Sahih Bukhari (Hadith)",
+    ),
+    QuranVerse(
+      textBn: "নিশ্চয়ই মুমিনরা একে অপরের ভাই।",
+      textEn: "The believers are but brothers.",
+      referenceBn: "সূরা আল-হুজুরাত: ১০",
+      referenceEn: "Surah Al-Hujurat: 10",
+    ),
+    QuranVerse(
+      textBn: "তোমরা বড় আশা নিয়ে আল্লাহর কাছে প্রার্থনা করো।",
+      textEn: "And call upon Him in fear and aspiration.",
+      referenceBn: "সূরা আল-আরাফ: ৫৬",
+      referenceEn: "Surah Al-A'raf: 56",
+    ),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -87,7 +292,7 @@ class _HomePageState extends State<HomePage> {
 
   void _calculateNextEvent() {
     final now = DateTime.now();
-    int adj = _cityAdjustments[_selectedCity] ?? 0;
+    int adj = _cityAdjustments[widget.selectedCity] ?? 0;
 
     RamadanDay? todayData;
     try {
@@ -162,6 +367,60 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _showLocationPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: widget.isDarkMode ? const Color(0xFF0F172A) : Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  widget.isBangla ? "লোকেশন নির্বাচন করুন" : "Select Location",
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Flexible(
+                child: GridView.count(
+                  shrinkWrap: true,
+                  crossAxisCount: 2,
+                  childAspectRatio: 3,
+                  children: _cityNamesBn.keys.map((city) {
+                    return InkWell(
+                      onTap: () {
+                        widget.onLocationChanged(city);
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: widget.selectedCity == city ? Colors.green.shade600 : (widget.isDarkMode ? Colors.white10 : Colors.grey.shade100),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          widget.isBangla ? _cityNamesBn[city]! : city,
+                          style: TextStyle(color: widget.selectedCity == city ? Colors.white : (widget.isDarkMode ? Colors.white70 : Colors.black87), fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final primaryGreen = Colors.green.shade600;
@@ -204,13 +463,16 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: primaryGreen.withOpacity(0.1),
-                    shape: BoxShape.circle,
+                InkWell(
+                  onTap: _showLocationPicker,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: primaryGreen.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.location_on_outlined, color: primaryGreen, size: 24),
                   ),
-                  child: Icon(Icons.wb_sunny_outlined, color: primaryGreen, size: 24),
                 ),
               ],
             ),
@@ -390,18 +652,21 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      widget.isBangla ? "ঢাকা, বাংলাদেশ" : "Dhaka, Bangladesh",
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
-                        fontSize: 12,
+                InkWell(
+                  onTap: _showLocationPicker,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.isBangla ? "${_cityNamesBn[widget.selectedCity]!}, বাংলাদেশ" : "${widget.selectedCity}, Bangladesh",
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.7),
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
-                    Icon(Icons.arrow_forward_ios_rounded, color: Colors.white.withOpacity(0.7), size: 14),
-                  ],
+                      Icon(Icons.edit_location_alt_rounded, color: Colors.white.withOpacity(0.7), size: 14),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -412,6 +677,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildDailyInspiration(Color primaryGreen, Color surfaceColor, Color textColor, Color subtextColor) {
+    // Get verse based on current day of the month (cycles through the 30 verses)
+    final int dayIndex = (DateTime.now().day - 1) % _dailyVerses.length;
+    final QuranVerse currentVerse = _dailyVerses[dayIndex];
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -448,15 +717,25 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(height: 12),
           Text(
-            widget.isBangla 
-              ? "“নিশ্চয়ই কষ্টের সাথেই স্বস্তি রয়েছে।” (সূরা ইনশিরাহ্: ৫)" 
-              : "“Indeed, with hardship [will be] ease.” (Surah Ash-Sharh: 5)",
+            widget.isBangla ? "“${currentVerse.textBn}”" : "“${currentVerse.textEn}”",
             style: TextStyle(
               color: textColor,
               fontSize: 15,
               height: 1.5,
               fontWeight: FontWeight.w500,
               fontStyle: FontStyle.italic,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              widget.isBangla ? currentVerse.referenceBn : currentVerse.referenceEn,
+              style: TextStyle(
+                color: subtextColor,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],

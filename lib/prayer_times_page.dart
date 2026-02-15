@@ -6,15 +6,22 @@ import 'package:intl/intl.dart';
 class PrayerTimesPage extends StatefulWidget {
   final bool isDarkMode;
   final bool isBangla;
+  final String selectedCity;
+  final Function(String) onLocationChanged;
 
-  const PrayerTimesPage({super.key, required this.isDarkMode, required this.isBangla});
+  const PrayerTimesPage({
+    super.key,
+    required this.isDarkMode,
+    required this.isBangla,
+    required this.selectedCity,
+    required this.onLocationChanged,
+  });
 
   @override
   State<PrayerTimesPage> createState() => _PrayerTimesPageState();
 }
 
 class _PrayerTimesPageState extends State<PrayerTimesPage> {
-  String _selectedCity = 'Dhaka';
   late Timer _timer;
   DateTime _currentTime = DateTime.now();
 
@@ -74,7 +81,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
   }
 
   PrayerTimes _getPrayerTimes(DateTime date) {
-    Coordinates coord = _cities[_selectedCity]!;
+    Coordinates coord = _cities[widget.selectedCity]!;
     final params = CalculationMethod.karachi.getParameters();
     params.madhab = Madhab.hanafi;
     return PrayerTimes(coord, DateComponents.from(date), params);
@@ -100,26 +107,27 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              Expanded(
+              Flexible(
                 child: GridView.count(
+                  shrinkWrap: true,
                   crossAxisCount: 2,
                   childAspectRatio: 3,
                   children: _cities.keys.map((city) {
                     return InkWell(
                       onTap: () {
-                        setState(() => _selectedCity = city);
+                        widget.onLocationChanged(city);
                         Navigator.pop(context);
                       },
                       child: Container(
                         margin: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: _selectedCity == city ? Colors.green.shade600 : (widget.isDarkMode ? Colors.white10 : Colors.grey.shade100),
+                          color: widget.selectedCity == city ? Colors.green.shade600 : (widget.isDarkMode ? Colors.white10 : Colors.grey.shade100),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         alignment: Alignment.center,
                         child: Text(
                           widget.isBangla ? _cityNamesBn[city]! : city,
-                          style: TextStyle(color: _selectedCity == city ? Colors.white : (widget.isDarkMode ? Colors.white70 : Colors.black87), fontWeight: FontWeight.bold),
+                          style: TextStyle(color: widget.selectedCity == city ? Colors.white : (widget.isDarkMode ? Colors.white70 : Colors.black87), fontWeight: FontWeight.bold),
                         ),
                       ),
                     );
@@ -163,7 +171,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(widget.isBangla ? "লোকেশন" : "Location", style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                          Text(widget.isBangla ? _cityNamesBn[_selectedCity]! : _selectedCity, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          Text(widget.isBangla ? _cityNamesBn[widget.selectedCity]! : widget.selectedCity, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),

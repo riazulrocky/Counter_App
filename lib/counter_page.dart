@@ -45,6 +45,7 @@ class _CounterPageState extends State<CounterPage> {
   int _counter = 0;
   bool _isBangla = true;
   int _selectedIndex = 0;
+  String _selectedCity = 'Dhaka';
 
   final List<DhikrData> _allDhikrs = const [
     DhikrData(
@@ -177,6 +178,12 @@ class _CounterPageState extends State<CounterPage> {
     });
   }
 
+  void _updateLocation(String newCity) {
+    setState(() {
+      _selectedCity = newCity;
+    });
+  }
+
   void _showDhikrPicker() {
     showModalBottomSheet(
       context: context,
@@ -252,6 +259,8 @@ class _CounterPageState extends State<CounterPage> {
         mainContent = HomePage(
           isDarkMode: widget.isDarkMode,
           isBangla: _isBangla,
+          selectedCity: _selectedCity,
+          onLocationChanged: _updateLocation,
           onNavigate: (index) => setState(() => _selectedIndex = index),
         );
         break;
@@ -260,12 +269,20 @@ class _CounterPageState extends State<CounterPage> {
             _buildCounterBody(primaryGreen, animationDuration, screenWidth);
         break;
       case 2:
-        mainContent =
-            RamadanPage(isDarkMode: widget.isDarkMode, isBangla: _isBangla);
+        mainContent = RamadanPage(
+          isDarkMode: widget.isDarkMode,
+          isBangla: _isBangla,
+          selectedCity: _selectedCity,
+          onLocationChanged: _updateLocation,
+        );
         break;
       case 3:
-        mainContent =
-            PrayerTimesPage(isDarkMode: widget.isDarkMode, isBangla: _isBangla);
+        mainContent = PrayerTimesPage(
+          isDarkMode: widget.isDarkMode,
+          isBangla: _isBangla,
+          selectedCity: _selectedCity,
+          onLocationChanged: _updateLocation,
+        );
         break;
       case 4:
         mainContent = ZakatCalculatorPage(
@@ -275,6 +292,8 @@ class _CounterPageState extends State<CounterPage> {
         mainContent = HomePage(
           isDarkMode: widget.isDarkMode,
           isBangla: _isBangla,
+          selectedCity: _selectedCity,
+          onLocationChanged: _updateLocation,
           onNavigate: (index) => setState(() => _selectedIndex = index),
         );
     }
