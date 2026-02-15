@@ -388,30 +388,35 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 20),
               Flexible(
-                child: GridView.count(
-                  shrinkWrap: true,
-                  crossAxisCount: 2,
-                  childAspectRatio: 3,
-                  children: _cityNamesBn.keys.map((city) {
-                    return InkWell(
-                      onTap: () {
-                        widget.onLocationChanged(city);
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: widget.selectedCity == city ? Colors.green.shade600 : (widget.isDarkMode ? Colors.white10 : Colors.grey.shade100),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          widget.isBangla ? _cityNamesBn[city]! : city,
-                          style: TextStyle(color: widget.selectedCity == city ? Colors.white : (widget.isDarkMode ? Colors.white70 : Colors.black87), fontWeight: FontWeight.bold),
-                        ),
-                      ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final crossAxisCount = constraints.maxWidth > 600 ? 4 : 2;
+                    return GridView.count(
+                      shrinkWrap: true,
+                      crossAxisCount: crossAxisCount,
+                      childAspectRatio: 3,
+                      children: _cityNamesBn.keys.map((city) {
+                        return InkWell(
+                          onTap: () {
+                            widget.onLocationChanged(city);
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: widget.selectedCity == city ? Colors.green.shade600 : (widget.isDarkMode ? Colors.white10 : Colors.grey.shade100),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              widget.isBangla ? _cityNamesBn[city]! : city,
+                              style: TextStyle(color: widget.selectedCity == city ? Colors.white : (widget.isDarkMode ? Colors.white70 : Colors.black87), fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     );
-                  }).toList(),
+                  }
                 ),
               ),
             ],
@@ -428,158 +433,177 @@ class _HomePageState extends State<HomePage> {
     final textColor = widget.isDarkMode ? Colors.white : Colors.black87;
     final subtextColor = widget.isDarkMode ? Colors.white70 : Colors.black54;
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Modern Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double maxWidth = constraints.maxWidth;
+        final bool isTablet = maxWidth > 600;
+        final double horizontalPadding = isTablet ? maxWidth * 0.1 : 20.0;
+
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 16),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 800),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      widget.isBangla ? "আসসালামু আলাইকুম" : "Assalamu Alaikum",
-                      style: TextStyle(
-                        color: primaryGreen,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
-                      ),
+                    // Modern Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.isBangla ? "আসসালামু আলাইকুম" : "Assalamu Alaikum",
+                              style: TextStyle(
+                                color: primaryGreen,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _getGreeting(),
+                              style: TextStyle(
+                                color: textColor,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        InkWell(
+                          onTap: _showLocationPicker,
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: primaryGreen.withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(Icons.location_on_outlined, color: primaryGreen, size: 24),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _getGreeting(),
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    const SizedBox(height: 24),
+                    
+                    // Ramadan Card
+                    _buildModernCountdownCard(primaryGreen, isTablet),
+                    
+                    const SizedBox(height: 32),
+                    
+                    // Daily Inspiration Section
+                    _buildDailyInspiration(primaryGreen, surfaceColor, textColor, subtextColor),
+                    
+                    const SizedBox(height: 32),
+                    
+                    // Feature Grid Label
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.isBangla ? "প্রয়োজনীয় সেবা" : "Essential Services",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                          ),
+                        ),
+                        Icon(Icons.grid_view_rounded, size: 20, color: subtextColor),
+                      ],
                     ),
+                    const SizedBox(height: 16),
+                    
+                    // Responsive Feature Grid
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: maxWidth > 900 ? 6 : (maxWidth > 600 ? 4 : 3),
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                        childAspectRatio: 0.82,
+                      ),
+                      itemCount: 6,
+                      itemBuilder: (context, index) {
+                        final features = [
+                          _buildModernFeatureCard(
+                            widget.isBangla ? "আল্লাহর নাম" : "99 Names",
+                            Icons.auto_awesome_rounded,
+                            Colors.amber.shade700,
+                            surfaceColor,
+                            textColor,
+                            () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AllahNamesPage(
+                                  isDarkMode: widget.isDarkMode,
+                                  isBangla: widget.isBangla,
+                                ),
+                              ),
+                            ),
+                          ),
+                          _buildModernFeatureCard(
+                            widget.isBangla ? "তাসবিহ" : "Tasbih",
+                            Icons.fingerprint_rounded,
+                            primaryGreen,
+                            surfaceColor,
+                            textColor,
+                            () => widget.onNavigate(1),
+                          ),
+                          _buildModernFeatureCard(
+                            widget.isBangla ? "রমজান" : "Ramadan",
+                            Icons.calendar_month_rounded,
+                            Colors.orange.shade700,
+                            surfaceColor,
+                            textColor,
+                            () => widget.onNavigate(2),
+                          ),
+                          _buildModernFeatureCard(
+                            widget.isBangla ? "নামাজ" : "Prayers",
+                            Icons.access_time_filled_rounded,
+                            Colors.blue.shade700,
+                            surfaceColor,
+                            textColor,
+                            () => widget.onNavigate(3),
+                          ),
+                          _buildModernFeatureCard(
+                            widget.isBangla ? "যাকাত" : "Zakat",
+                            Icons.calculate_rounded,
+                            Colors.teal.shade700,
+                            surfaceColor,
+                            textColor,
+                            () => widget.onNavigate(4),
+                          ),
+                          _buildModernFeatureCard(
+                            widget.isBangla ? "কিবলা" : "Qibla",
+                            Icons.explore_rounded,
+                            Colors.red.shade700,
+                            surfaceColor,
+                            textColor,
+                            () => Navigator.pushNamed(context, '/qibla'),
+                          ),
+                        ];
+                        return features[index];
+                      },
+                    ),
+                    const SizedBox(height: 10),
                   ],
                 ),
-                InkWell(
-                  onTap: _showLocationPicker,
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: primaryGreen.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.location_on_outlined, color: primaryGreen, size: 24),
-                  ),
-                ),
-              ],
+              ),
             ),
-            const SizedBox(height: 24),
-            
-            // Ramadan Card - Redesigned
-            _buildModernCountdownCard(primaryGreen),
-            
-            const SizedBox(height: 32),
-            
-            // Daily Inspiration Section
-            _buildDailyInspiration(primaryGreen, surfaceColor, textColor, subtextColor),
-            
-            const SizedBox(height: 32),
-            
-            // Feature Grid Label
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.isBangla ? "প্রয়োজনীয় সেবা" : "Essential Services",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: textColor,
-                  ),
-                ),
-                Icon(Icons.grid_view_rounded, size: 20, color: subtextColor),
-              ],
-            ),
-            const SizedBox(height: 16),
-            
-            // Modern Bento-style Grid
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 2,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 1.1,
-              children: [
-                _buildModernFeatureCard(
-                  widget.isBangla ? "আল্লাহর নাম" : "99 Names",
-                  Icons.auto_awesome_rounded,
-                  Colors.amber.shade700,
-                  surfaceColor,
-                  textColor,
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AllahNamesPage(
-                        isDarkMode: widget.isDarkMode,
-                        isBangla: widget.isBangla,
-                      ),
-                    ),
-                  ),
-                ),
-                _buildModernFeatureCard(
-                  widget.isBangla ? "ডিজিটাল তাসবিহ" : "Tasbih",
-                  Icons.fingerprint_rounded,
-                  primaryGreen,
-                  surfaceColor,
-                  textColor,
-                  () => widget.onNavigate(1),
-                ),
-                _buildModernFeatureCard(
-                  widget.isBangla ? "রমজান" : "Ramadan",
-                  Icons.calendar_month_rounded,
-                  Colors.orange.shade700,
-                  surfaceColor,
-                  textColor,
-                  () => widget.onNavigate(2),
-                ),
-                _buildModernFeatureCard(
-                  widget.isBangla ? "নামাজের সময়" : "Prayer Times",
-                  Icons.access_time_filled_rounded,
-                  Colors.blue.shade700,
-                  surfaceColor,
-                  textColor,
-                  () => widget.onNavigate(3),
-                ),
-                _buildModernFeatureCard(
-                  widget.isBangla ? "যাকাত" : "Zakat Calc",
-                  Icons.calculate_rounded,
-                  Colors.teal.shade700,
-                  surfaceColor,
-                  textColor,
-                  () => widget.onNavigate(4),
-                ),
-                _buildModernFeatureCard(
-                  widget.isBangla ? "কিবলা" : "Qibla",
-                  Icons.explore_rounded,
-                  Colors.red.shade700,
-                  surfaceColor,
-                  textColor,
-                  () => Navigator.pushNamed(context, '/qibla'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-          ],
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
 
-  Widget _buildModernCountdownCard(Color primaryGreen) {
+  Widget _buildModernCountdownCard(Color primaryGreen, bool isTablet) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -604,12 +628,12 @@ class _HomePageState extends State<HomePage> {
             top: -20,
             child: Icon(
               Icons.dark_mode_outlined,
-              size: 100,
+              size: isTablet ? 150 : 100,
               color: Colors.white.withOpacity(0.1),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(isTablet ? 32 : 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -632,26 +656,26 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: isTablet ? 24 : 16),
                 Text(
                   _nextEvent,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
-                    fontSize: 16,
+                    fontSize: isTablet ? 20 : 16,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   _formatDuration(_timeLeft),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 36,
+                    fontSize: isTablet ? 48 : 36,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.5,
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: isTablet ? 24 : 16),
                 InkWell(
                   onTap: _showLocationPicker,
                   child: Row(
@@ -661,10 +685,10 @@ class _HomePageState extends State<HomePage> {
                         widget.isBangla ? "${_cityNamesBn[widget.selectedCity]!}, বাংলাদেশ" : "${widget.selectedCity}, Bangladesh",
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.7),
-                          fontSize: 12,
+                          fontSize: isTablet ? 14 : 12,
                         ),
                       ),
-                      Icon(Icons.edit_location_alt_rounded, color: Colors.white.withOpacity(0.7), size: 14),
+                      Icon(Icons.edit_location_alt_rounded, color: Colors.white.withOpacity(0.7), size: isTablet ? 18 : 14),
                     ],
                   ),
                 ),
@@ -677,7 +701,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildDailyInspiration(Color primaryGreen, Color surfaceColor, Color textColor, Color subtextColor) {
-    // Get verse based on current day of the month (cycles through the 30 verses)
     final int dayIndex = (DateTime.now().day - 1) % _dailyVerses.length;
     final QuranVerse currentVerse = _dailyVerses[dayIndex];
 
@@ -754,12 +777,12 @@ class _HomePageState extends State<HomePage> {
     return Container(
       decoration: BoxDecoration(
         color: surfaceColor,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(widget.isDarkMode ? 0.2 : 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -767,25 +790,29 @@ class _HomePageState extends State<HomePage> {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(16),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(10),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: accentColor.withOpacity(0.1),
                     shape: BoxShape.circle,
+                    border: Border.all(color: accentColor.withOpacity(0.1), width: 1),
                   ),
-                  child: Icon(icon, color: accentColor, size: 24),
+                  child: Icon(icon, color: accentColor, size: 22),
                 ),
+                const SizedBox(height: 10),
                 Text(
                   title,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: textColor,
                   ),
