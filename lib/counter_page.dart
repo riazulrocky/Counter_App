@@ -284,10 +284,6 @@ class _CounterPageState extends State<CounterPage> {
           onLocationChanged: _updateLocation,
         );
         break;
-      case 4:
-        mainContent = ZakatCalculatorPage(
-            isDarkMode: widget.isDarkMode, isBangla: _isBangla);
-        break;
       default:
         mainContent = HomePage(
           isDarkMode: widget.isDarkMode,
@@ -341,10 +337,6 @@ class _CounterPageState extends State<CounterPage> {
               icon: const Icon(Icons.access_time),
               label: _isBangla ? "নামাজ" : "Prayer",
             ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.calculate),
-              label: _isBangla ? "যাকাত" : "Zakat",
-            ),
           ],
         ),
       ),
@@ -365,9 +357,6 @@ class _CounterPageState extends State<CounterPage> {
         break;
       case 3:
         title = _isBangla ? "নামাজের সময়" : "Prayer Times";
-        break;
-      case 4:
-        title = _isBangla ? "যাকাত ক্যালকুলেটর" : "Zakat Calculator";
         break;
       default:
         title = _isBangla ? "নূরিফাই" : "Noorify";

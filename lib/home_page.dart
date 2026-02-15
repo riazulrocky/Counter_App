@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'allah_names_page.dart';
 import 'ramadan_page.dart';
+import 'doa_page.dart';
 
 class QuranVerse {
   final String textBn;
@@ -533,6 +534,54 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (context, index) {
                         final features = [
                           _buildModernFeatureCard(
+                            widget.isBangla ? "নামাজের সময়" : "Prayer Times",
+                            Icons.access_time_filled_rounded,
+                            Colors.blue.shade700,
+                            surfaceColor,
+                            textColor,
+                            () => widget.onNavigate(3),
+                          ),
+                          _buildModernFeatureCard(
+                            widget.isBangla ? "রমজান ক্যালেন্ডার" : "Ramadan Calendar",
+                            Icons.calendar_month_rounded,
+                            Colors.orange.shade700,
+                            surfaceColor,
+                            textColor,
+                            () => widget.onNavigate(2),
+                          ),
+                          _buildModernFeatureCard(
+                            widget.isBangla ? "ডিজিটাল তাসবিহ" : "Digital Tasbih",
+                            Icons.fingerprint_rounded,
+                            primaryGreen,
+                            surfaceColor,
+                            textColor,
+                            () => widget.onNavigate(1),
+                          ),
+                          _buildModernFeatureCard(
+                            widget.isBangla ? "যাকাত ক্যালকুলেটর" : "Jakat Calculator",
+                            Icons.calculate_rounded,
+                            Colors.teal.shade700,
+                            surfaceColor,
+                            textColor,
+                            () => widget.onNavigate(4),
+                          ),
+                          _buildModernFeatureCard(
+                            widget.isBangla ? "ছোট দোয়া" : "Choto Doa",
+                            Icons.menu_book_rounded,
+                            Colors.purple.shade700,
+                            surfaceColor,
+                            textColor,
+                            () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DoaPage(
+                                  isDarkMode: widget.isDarkMode,
+                                  isBangla: widget.isBangla,
+                                ),
+                              ),
+                            ),
+                          ),
+                          _buildModernFeatureCard(
                             widget.isBangla ? "আল্লাহর নাম" : "99 Names",
                             Icons.auto_awesome_rounded,
                             Colors.amber.shade700,
@@ -547,46 +596,6 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                             ),
-                          ),
-                          _buildModernFeatureCard(
-                            widget.isBangla ? "তাসবিহ" : "Tasbih",
-                            Icons.fingerprint_rounded,
-                            primaryGreen,
-                            surfaceColor,
-                            textColor,
-                            () => widget.onNavigate(1),
-                          ),
-                          _buildModernFeatureCard(
-                            widget.isBangla ? "রমজান" : "Ramadan",
-                            Icons.calendar_month_rounded,
-                            Colors.orange.shade700,
-                            surfaceColor,
-                            textColor,
-                            () => widget.onNavigate(2),
-                          ),
-                          _buildModernFeatureCard(
-                            widget.isBangla ? "নামাজ" : "Prayers",
-                            Icons.access_time_filled_rounded,
-                            Colors.blue.shade700,
-                            surfaceColor,
-                            textColor,
-                            () => widget.onNavigate(3),
-                          ),
-                          _buildModernFeatureCard(
-                            widget.isBangla ? "যাকাত" : "Zakat",
-                            Icons.calculate_rounded,
-                            Colors.teal.shade700,
-                            surfaceColor,
-                            textColor,
-                            () => widget.onNavigate(4),
-                          ),
-                          _buildModernFeatureCard(
-                            widget.isBangla ? "কিবলা" : "Qibla",
-                            Icons.explore_rounded,
-                            Colors.red.shade700,
-                            surfaceColor,
-                            textColor,
-                            () => Navigator.pushNamed(context, '/qibla'),
                           ),
                         ];
                         return features[index];
@@ -809,10 +818,10 @@ class _HomePageState extends State<HomePage> {
                 Text(
                   title,
                   textAlign: TextAlign.center,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: FontWeight.bold,
                     color: textColor,
                   ),
