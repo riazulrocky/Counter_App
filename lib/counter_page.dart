@@ -4,6 +4,8 @@ import 'home_page.dart';
 import 'prayer_times_page.dart';
 import 'ramadan_page.dart';
 import 'zakat_calculator_page.dart';
+import 'allah_names_page.dart';
+import 'doa_page.dart';
 
 class DhikrData {
   final String nameBn;
@@ -82,7 +84,7 @@ class _CounterPageState extends State<CounterPage> {
       uccharonEn: "La ilaha illallah",
       orthoBn: "আল্লাহ ছাড়া কোনো উপাস্য নেই",
       orthoEn: "There is no deity except Allah",
-      defaultCount: 100,
+      defaultCount: 50,
     ),
     DhikrData(
       nameBn: "পূর্ণ তাহলিল",
@@ -91,7 +93,7 @@ class _CounterPageState extends State<CounterPage> {
       uccharonEn: "La ilaha illallahu wahdahu la sharika lahu",
       orthoBn: "আল্লাহ এক, তাঁর কোনো শরিক নেই, সবই তাঁর",
       orthoEn: "Allah is One, He has no partner, all belongs to Him",
-      defaultCount: 100,
+      defaultCount: 50,
     ),
     DhikrData(
       nameBn: "ইস্তিগফার",
@@ -100,7 +102,7 @@ class _CounterPageState extends State<CounterPage> {
       uccharonEn: "Astaghfirullah",
       orthoBn: "আমি আল্লাহর কাছে ক্ষমা চাই",
       orthoEn: "I seek forgiveness from Allah",
-      defaultCount: 70,
+      defaultCount: 50,
     ),
     DhikrData(
       nameBn: "সুবহানাল্লাহিল আজীম",
@@ -109,7 +111,7 @@ class _CounterPageState extends State<CounterPage> {
       uccharonEn: "Subhanallahi al-azim wa bihamdihi",
       orthoBn: "মহান আল্লাহ পবিত্র ও তাঁর প্রশংসা",
       orthoEn: "Allah, the Great, is Holy and Praiseworthy",
-      defaultCount: 100,
+      defaultCount: 50,
     ),
     DhikrData(
       nameBn: "দরূদ শরীফ",
@@ -118,7 +120,7 @@ class _CounterPageState extends State<CounterPage> {
       uccharonEn: "Allahumma salli ala Muhammad",
       orthoBn: "নবী (সা.) এর উপর রহমত প্রেরণ করুন",
       orthoEn: "Send blessings upon the Prophet (PBUH)",
-      defaultCount: 100,
+      defaultCount: 50,
     ),
     DhikrData(
       nameBn: "সাধারণ গণনা",
@@ -246,6 +248,67 @@ class _CounterPageState extends State<CounterPage> {
     );
   }
 
+  void _showTargetCountPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: widget.isDarkMode ? const Color(0xFF0F172A) : Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+          height: 500,
+          child: Column(
+            children: [
+              Text(
+                _isBangla ? "লক্ষ্য সংখ্যা নির্বাচন করুন" : "Select Target Count",
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    childAspectRatio: 1.5,
+                  ),
+                  itemCount: 500,
+                  itemBuilder: (context, index) {
+                    final count = index + 1;
+                    final isSelected = _targetCount == count;
+                    return InkWell(
+                      onTap: () {
+                        setState(() {
+                          _targetCount = count;
+                          if (_counter > _targetCount) _counter = _targetCount;
+                        });
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.green.shade600 : (widget.isDarkMode ? Colors.white10 : Colors.grey.shade100),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          _formatNumber(count.toString()),
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : (widget.isDarkMode ? Colors.white70 : Colors.black87),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final primaryGreen = Colors.green.shade600;
@@ -284,6 +347,24 @@ class _CounterPageState extends State<CounterPage> {
           onLocationChanged: _updateLocation,
         );
         break;
+      case 4:
+        mainContent = AllahNamesPage(
+          isDarkMode: widget.isDarkMode,
+          isBangla: _isBangla,
+        );
+        break;
+      case 5:
+        mainContent = ZakatCalculatorPage(
+          isDarkMode: widget.isDarkMode,
+          isBangla: _isBangla,
+        );
+        break;
+      case 6:
+        mainContent = DoaPage(
+          isDarkMode: widget.isDarkMode,
+          isBangla: _isBangla,
+        );
+        break;
       default:
         mainContent = HomePage(
           isDarkMode: widget.isDarkMode,
@@ -308,7 +389,7 @@ class _CounterPageState extends State<CounterPage> {
         appBar: _buildAppBar(primaryGreen, screenWidth),
         body: SafeArea(child: mainContent),
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
+          currentIndex: _selectedIndex < 4 ? _selectedIndex : 0,
           onTap: (index) {
             setState(() {
               _selectedIndex = index;
@@ -358,6 +439,15 @@ class _CounterPageState extends State<CounterPage> {
       case 3:
         title = _isBangla ? "নামাজের সময়" : "Prayer Times";
         break;
+      case 4:
+        title = _isBangla ? "আল্লাহর ৯৯টি নাম" : "99 Names of Allah";
+        break;
+      case 5:
+        title = _isBangla ? "যাকাত ক্যালকুলেটর" : "Zakat Calculator";
+        break;
+      case 6:
+        title = _isBangla ? "ছোট দোয়া" : "Short Dua";
+        break;
       default:
         title = _isBangla ? "নূরিফাই" : "Noorify";
     }
@@ -372,6 +462,12 @@ class _CounterPageState extends State<CounterPage> {
       surfaceTintColor: Colors.transparent,
       iconTheme:
           IconThemeData(color: widget.isDarkMode ? Colors.white : primaryGreen),
+      leading: _selectedIndex != 0 
+          ? IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => setState(() => _selectedIndex = 0),
+            )
+          : null,
       title: isHome
           ? Row(
               mainAxisSize: MainAxisSize.min,
@@ -470,7 +566,37 @@ class _CounterPageState extends State<CounterPage> {
               ),
               const SizedBox(height: 16),
               if (!_currentDhikr.isGeneral)
-                _buildTargetCountSelector(primaryGreen),
+                InkWell(
+                  onTap: _showTargetCountPicker,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4))
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(_isBangla ? "লক্ষ্য সংখ্যা" : "Target Count",
+                                style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                            Text(_formatNumber(_targetCount.toString()),
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        Icon(Icons.edit_note_rounded, color: primaryGreen),
+                      ],
+                    ),
+                  ),
+                ),
               const SizedBox(height: 20),
               _buildCounterCard(primaryGreen, animationDuration),
               const SizedBox(height: 30),
@@ -478,49 +604,6 @@ class _CounterPageState extends State<CounterPage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTargetCountSelector(Color primaryGreen) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4))
-        ],
-      ),
-      child: DropdownButtonFormField<int>(
-        value: _targetCount > 200 ? 33 : _targetCount,
-        isExpanded: true,
-        decoration: InputDecoration(
-          labelText: _isBangla ? "লক্ষ্য সংখ্যা" : "Target Count",
-          labelStyle: const TextStyle(fontSize: 14),
-          border: InputBorder.none,
-        ),
-        dropdownColor:
-            widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
-        style: TextStyle(
-            color: widget.isDarkMode ? Colors.white : Colors.black,
-            fontSize: 15),
-        items: List.generate(200, (index) => index + 1)
-            .map((e) => DropdownMenuItem(
-                  value: e,
-                  child: Text(_formatNumber(e.toString())),
-                ))
-            .toList(),
-        onChanged: (value) {
-          if (value == null) return;
-          setState(() {
-            _targetCount = value;
-            if (_counter > _targetCount) _counter = _targetCount;
-          });
-        },
       ),
     );
   }

@@ -57,7 +57,7 @@ class AboutDeveloperPage extends StatelessWidget {
               const SizedBox(height: 10),
               // Profession/Status
               Text(
-                "Android App Developer",
+                "Software Engineer",
                 style: TextStyle(
                   fontSize: 18,
                   color: primaryGreen,
@@ -66,7 +66,23 @@ class AboutDeveloperPage extends StatelessWidget {
               ),
               const SizedBox(height: 30),
               const Divider(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
+              // Education Section Label
+              Row(
+                children: [
+                  Icon(Icons.school_rounded, size: 20, color: primaryGreen),
+                  const SizedBox(width: 8),
+                  Text(
+                    "Education",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: isDarkMode ? Colors.white : Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
               // University Info
               _buildInfoTile(
                 icon: Icons.account_balance,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'allah_names_page.dart';
 import 'ramadan_page.dart';
 import 'doa_page.dart';
+import 'zakat_calculator_page.dart';
 
 class QuranVerse {
   final String textBn;
@@ -558,28 +559,20 @@ class _HomePageState extends State<HomePage> {
                             () => widget.onNavigate(1),
                           ),
                           _buildModernFeatureCard(
-                            widget.isBangla ? "যাকাত ক্যালকুলেটর" : "Jakat Calculator",
+                            widget.isBangla ? "যাকাত ক্যালকুলেটর" : "Zakat Calculator",
                             Icons.calculate_rounded,
                             Colors.teal.shade700,
                             surfaceColor,
                             textColor,
-                            () => widget.onNavigate(4),
+                            () => widget.onNavigate(5),
                           ),
                           _buildModernFeatureCard(
-                            widget.isBangla ? "ছোট দোয়া" : "Choto Doa",
+                            widget.isBangla ? "ছোট দোয়া" : "Short Dua",
                             Icons.menu_book_rounded,
                             Colors.purple.shade700,
                             surfaceColor,
                             textColor,
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DoaPage(
-                                  isDarkMode: widget.isDarkMode,
-                                  isBangla: widget.isBangla,
-                                ),
-                              ),
-                            ),
+                            () => widget.onNavigate(6),
                           ),
                           _buildModernFeatureCard(
                             widget.isBangla ? "আল্লাহর নাম" : "99 Names",
@@ -587,20 +580,17 @@ class _HomePageState extends State<HomePage> {
                             Colors.amber.shade700,
                             surfaceColor,
                             textColor,
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AllahNamesPage(
-                                  isDarkMode: widget.isDarkMode,
-                                  isBangla: widget.isBangla,
-                                ),
-                              ),
-                            ),
+                            () => widget.onNavigate(4),
                           ),
                         ];
                         return features[index];
                       },
                     ),
+                    const SizedBox(height: 32),
+                    
+                    // Ramadan Dua Section (New)
+                    _buildRamadanDuaSection(primaryGreen, surfaceColor, textColor, subtextColor),
+                    
                     const SizedBox(height: 10),
                   ],
                 ),
@@ -720,7 +710,7 @@ class _HomePageState extends State<HomePage> {
         color: surfaceColor,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: widget.isDarkMode ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05),
+          color: widget.isDarkMode ? Colors.white10 : Colors.black.withOpacity(0.05),
         ),
         boxShadow: [
           BoxShadow(
@@ -772,6 +762,155 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildRamadanDuaSection(Color primaryGreen, Color surfaceColor, Color textColor, Color subtextColor) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.isBangla ? "রমজানের দোয়া" : "Ramadan Dua",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
+        ),
+        const SizedBox(height: 16),
+        _buildDuaCard(
+          widget.isBangla ? "সেহরির দোয়া" : "Sehri Dua",
+          "نَوَيْتُ اَنْ اَصُوْمَ رَمَضَانَ الْكَرِيْمِ مِنْ شَهْرِ رَمَضَانَ الْمُبَارَكِ فَرْضًا لَكَ يَا اَللهُ فَتَقَبَّلْ مِنِّى اِنَّكَ اَنْتَ السَّمِيْعُ الْعَلِيْمُ",
+          widget.isBangla 
+            ? "নাওয়াইতু আন আছুমা গাদাম মিন শাহরি রামাদ্বানাল মুবারাকি ফারদাল্লাকা ইয়া আল্লাহু ফাতাক্বাব্বাল মিন্নি ইন্নাকা আনতাস সামিউল আলিম।" 
+            : "Nawaitu an asuma ghadam min shahri ramadanal mubaraki fardal-laka ya Allahu fataqabbal minni innaka antas-samiul 'alim.",
+          widget.isBangla 
+            ? "হে আল্লাহ! আমি আগামীকাল পবিত্র রমজান মাসের রোজা রাখার নিয়ত করলাম, যা আপনার পক্ষ থেকে ফরজ। সুতরাং আমার পক্ষ থেকে তা কবুল করুন। নিশ্চয়ই আপনি সর্বশ্রোতা ও সর্বজ্ঞ।" 
+            : "O Allah! I intend to keep the fast tomorrow for the month of Ramadan, which is obligatory from You. So accept it from me. Indeed, You are the All-Hearing, the All-Knowing.",
+          primaryGreen, surfaceColor, textColor, subtextColor
+        ),
+        const SizedBox(height: 16),
+        _buildDuaCard(
+          widget.isBangla ? "ইফতারের দোয়া" : "Iftar Dua",
+          "اللَّهُمَّ لَكَ صُمْتُ وَتَوَكَّلْتُ عَلَى رِزْقِكَ وَأَفْطَرْتُ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ",
+          widget.isBangla 
+            ? "আল্লাহুম্মা লাকা ছুমতু ওয়া তা'ওয়াক্কালতু আ'লা রিজকিকা ওয়া আফতারতু বি রাহমাতিকা ইয়া আর হামার রা-হিমীন।" 
+            : "Allahumma laka sumtu wa tawakkaltu 'ala rizqika wa aftartu bi-rahmatika ya arhamar-rahimin.",
+          widget.isBangla 
+            ? "হে আল্লাহ! আমি আপনার সন্তুষ্টির জন্য রোজা রেখেছি এবং আপনার ওপর ভরসা করেছি, আপনার দেওয়া রিজিক দিয়েই ইফতার করছি। আপনার দয়ার উসিলায়, হে শ্রেষ্ঠ দয়ালু।" 
+            : "O Allah! I fasted for You and I put my trust in Your provision and I break my fast with Your mercy, O Most Merciful of the merciful.",
+          primaryGreen, surfaceColor, textColor, subtextColor
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDuaCard(String title, String arabic, String uccharon, String meaning, Color primary, Color surface, Color text, Color subtext) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: widget.isDarkMode ? Colors.white10 : Colors.black.withOpacity(0.05)),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(widget.isDarkMode ? 0.2 : 0.05), blurRadius: 10, offset: const Offset(0, 4)),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: () => _showDuaOrthoDetail(context, title, meaning, primary, surface, text),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(color: primary.withOpacity(0.1), shape: BoxShape.circle),
+                          child: Icon(Icons.star_rounded, color: primary, size: 18),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primary)),
+                      ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.info_outline_rounded, size: 12, color: primary),
+                          const SizedBox(width: 4),
+                          Text(
+                            widget.isBangla ? "অর্থ দেখুন" : "Meaning",
+                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: primary),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(arabic, textAlign: TextAlign.center, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: text, fontFamily: 'serif', height: 1.5)),
+                const SizedBox(height: 16),
+                _buildDuaDetailSection(widget.isBangla ? "উচ্চারণ:" : "Pronunciation:", uccharon, primary, text),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showDuaOrthoDetail(BuildContext context, String title, String meaning, Color primary, Color surface, Color text) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(title, style: TextStyle(color: text, fontWeight: FontWeight.bold, fontSize: 18)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.isBangla ? "অর্থ:" : "Meaning:",
+              style: TextStyle(color: primary, fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 0.5),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              meaning,
+              style: TextStyle(color: text, fontSize: 16, height: 1.5, fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(widget.isBangla ? "ঠিক আছে" : "Close", style: TextStyle(color: primary, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDuaDetailSection(String label, String content, Color primary, Color text) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(color: primary, fontWeight: FontWeight.bold, fontSize: 12)),
+        const SizedBox(height: 4),
+        Text(content, style: TextStyle(color: text.withOpacity(0.8), fontSize: 14, height: 1.4)),
+      ],
     );
   }
 

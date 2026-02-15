@@ -49,7 +49,7 @@ class AllahNamesPage extends StatelessWidget {
     AllahName(nameEn: "Al-Qabid", nameBn: "আল-কাবিদ", arabic: "القابض", meaningEn: "The Withholder", meaningBn: "সংকুচিতকারী"),
     AllahName(nameEn: "Al-Basit", nameBn: "আল-বাসিত", arabic: "الباسط", meaningEn: "The Extender", meaningBn: "প্রসারকারী"),
     AllahName(nameEn: "Al-Khafid", nameBn: "আল-খাফিদ", arabic: "الخافض", meaningEn: "The Abaser", meaningBn: "নিচুকারী"),
-    AllahName(nameEn: "Ar-Rafi", nameBn: "আর-রাফি'", arabic: "الرافع", meaningEn: "The Exalter", meaningBn: "উন্নয়নকারী"),
+    AllahName(nameEn: "Ar-Rafi", nameBn: "আর-রাফি'", arabic: "الরাفع", meaningEn: "The Exalter", meaningBn: "উন্নয়নকারী"),
     AllahName(nameEn: "Al-Mu'izz", nameBn: "আল-মু'ইয্য", arabic: "المعز", meaningEn: "The Honorer", meaningBn: "সম্মান দাতা"),
     AllahName(nameEn: "Al-Mudhill", nameBn: "আল-মুযিল্ল", arabic: "المذل", meaningEn: "The Humiliator", meaningBn: "লাঞ্ছনাকারী"),
     AllahName(nameEn: "As-Sami", nameBn: "আস-সামী'", arabic: "السميع", meaningEn: "The All-Hearing", meaningBn: "সর্বশ্রোতা"),
@@ -102,7 +102,7 @@ class AllahNamesPage extends StatelessWidget {
     AllahName(nameEn: "Al-Awwal", nameBn: "আল-আওয়াল", arabic: "الأول", meaningEn: "The First", meaningBn: "প্রথম"),
     AllahName(nameEn: "Al-Akhir", nameBn: "আল-আখির", arabic: "الآخر", meaningEn: "The Last", meaningBn: "শেষ"),
     AllahName(nameEn: "Az-Zahir", nameBn: "আয-যাহির", arabic: "الظاهر", meaningEn: "The Apparent", meaningBn: "প্রকাশ্য"),
-    AllahName(nameEn: "Al-Batin", nameBn: "আল-বাতিন", arabic: "الباطن", meaningEn: "The Hidden", meaningBn: "গুপ্ত"),
+    AllahName(nameEn: "Al-Batin", nameBn: "আল-বাতিন", arabic: "الباطন", meaningEn: "The Hidden", meaningBn: "গুপ্ত"),
     AllahName(nameEn: "Al-Wali", nameBn: "আল-ওয়ালী", arabic: "الوالي", meaningEn: "The Governor", meaningBn: "শাসক"),
     AllahName(nameEn: "Al-Muta'ali", nameBn: "আল-মুতাআলী", arabic: "المتعالي", meaningEn: "The Most Exalted", meaningBn: "সর্বোচ্চ"),
     AllahName(nameEn: "Al-Barr", nameBn: "আল-বার্র", arabic: "البر", meaningEn: "The Source of Goodness", meaningBn: "কল্যাণের উৎস"),
@@ -134,23 +134,10 @@ class AllahNamesPage extends StatelessWidget {
     final surfaceColor = isDarkMode ? const Color(0xFF1E293B) : Colors.white;
     final textColor = isDarkMode ? Colors.white : Colors.black87;
     final subtextColor = isDarkMode ? Colors.white70 : Colors.black54;
+    final scaffoldBg = isDarkMode ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
 
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        elevation: 0,
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        iconTheme: IconThemeData(color: isDarkMode ? Colors.white : primaryGreen),
-        title: Text(
-          isBangla ? "আল্লাহর ৯৯টি নাম" : "99 Names of Allah",
-          style: TextStyle(
-            color: isDarkMode ? Colors.white : primaryGreen,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+      backgroundColor: scaffoldBg,
       body: LayoutBuilder(
         builder: (context, constraints) {
           final crossAxisCount = constraints.maxWidth > 900 ? 3 : (constraints.maxWidth > 600 ? 2 : 1);
