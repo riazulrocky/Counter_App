@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'about_developer.dart';
+import 'home_page.dart';
 import 'prayer_times_page.dart';
 import 'ramadan_page.dart';
 import 'zakat_calculator_page.dart';
@@ -179,8 +180,10 @@ class _CounterPageState extends State<CounterPage> {
   void _showDhikrPicker() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: widget.isDarkMode ? const Color(0xFF0F172A) : Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      backgroundColor:
+          widget.isDarkMode ? const Color(0xFF0F172A) : Colors.white,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
@@ -192,7 +195,8 @@ class _CounterPageState extends State<CounterPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
                   _isBangla ? "যিকির নির্বাচন করুন" : "Select Dhikr",
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
               const SizedBox(height: 20),
@@ -205,11 +209,17 @@ class _CounterPageState extends State<CounterPage> {
                       title: Text(
                         _isBangla ? dhikr.nameBn : dhikr.nameEn,
                         style: TextStyle(
-                          color: _currentDhikr == dhikr ? Colors.green.shade600 : null,
-                          fontWeight: _currentDhikr == dhikr ? FontWeight.bold : null,
+                          color: _currentDhikr == dhikr
+                              ? Colors.green.shade600
+                              : null,
+                          fontWeight:
+                              _currentDhikr == dhikr ? FontWeight.bold : null,
                         ),
                       ),
-                      trailing: _currentDhikr == dhikr ? Icon(Icons.check_circle, color: Colors.green.shade600) : null,
+                      trailing: _currentDhikr == dhikr
+                          ? Icon(Icons.check_circle,
+                              color: Colors.green.shade600)
+                          : null,
                       onTap: () {
                         setState(() {
                           _currentDhikr = dhikr;
@@ -239,25 +249,42 @@ class _CounterPageState extends State<CounterPage> {
     Widget mainContent;
     switch (_selectedIndex) {
       case 0:
-        mainContent = _buildCounterBody(primaryGreen, animationDuration, screenWidth);
+        mainContent = HomePage(
+          isDarkMode: widget.isDarkMode,
+          isBangla: _isBangla,
+          onNavigate: (index) => setState(() => _selectedIndex = index),
+        );
         break;
       case 1:
-        mainContent = RamadanPage(isDarkMode: widget.isDarkMode, isBangla: _isBangla);
+        mainContent =
+            _buildCounterBody(primaryGreen, animationDuration, screenWidth);
         break;
       case 2:
-        mainContent = PrayerTimesPage(isDarkMode: widget.isDarkMode, isBangla: _isBangla);
+        mainContent =
+            RamadanPage(isDarkMode: widget.isDarkMode, isBangla: _isBangla);
         break;
       case 3:
-        mainContent = ZakatCalculatorPage(isDarkMode: widget.isDarkMode, isBangla: _isBangla);
+        mainContent =
+            PrayerTimesPage(isDarkMode: widget.isDarkMode, isBangla: _isBangla);
+        break;
+      case 4:
+        mainContent = ZakatCalculatorPage(
+            isDarkMode: widget.isDarkMode, isBangla: _isBangla);
         break;
       default:
-        mainContent = _buildCounterBody(primaryGreen, animationDuration, screenWidth);
+        mainContent = HomePage(
+          isDarkMode: widget.isDarkMode,
+          isBangla: _isBangla,
+          onNavigate: (index) => setState(() => _selectedIndex = index),
+        );
     }
 
     return AnimatedContainer(
       duration: animationDuration,
       decoration: BoxDecoration(
-        color: widget.isDarkMode ? const Color(0xFF020617) : const Color(0xFFF8FAFC),
+        color: widget.isDarkMode
+            ? const Color(0xFF020617)
+            : const Color(0xFFF8FAFC),
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -265,7 +292,6 @@ class _CounterPageState extends State<CounterPage> {
         drawer: _buildDrawer(primaryGreen),
         appBar: _buildAppBar(primaryGreen, screenWidth),
         body: SafeArea(child: mainContent),
-        
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: (index) {
@@ -273,7 +299,8 @@ class _CounterPageState extends State<CounterPage> {
               _selectedIndex = index;
             });
           },
-          backgroundColor: widget.isDarkMode ? const Color(0xFF0F172A) : Colors.white,
+          backgroundColor:
+              widget.isDarkMode ? const Color(0xFF0F172A) : Colors.white,
           selectedItemColor: primaryGreen,
           unselectedItemColor: Colors.grey,
           showUnselectedLabels: true,
@@ -282,6 +309,10 @@ class _CounterPageState extends State<CounterPage> {
             BottomNavigationBarItem(
               icon: const Icon(Icons.home),
               label: _isBangla ? "হোম" : "Home",
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.fingerprint),
+              label: _isBangla ? "তাসবিহ" : "Tasbih",
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.calendar_month),
@@ -304,45 +335,80 @@ class _CounterPageState extends State<CounterPage> {
   PreferredSizeWidget _buildAppBar(Color primaryGreen, double screenWidth) {
     String title;
     switch (_selectedIndex) {
-      case 0: title = _isBangla ? "🌙 নূরিফাই" : "🌙 Noorify"; break; // Icon added before name
-      case 1: title = _isBangla ? "রমজান ক্যালেন্ডার" : "Ramadan Calendar"; break;
-      case 2: title = _isBangla ? "নামাজের সময়" : "Prayer Times"; break;
-      case 3: title = _isBangla ? "যাকাত ক্যালকুলেটর" : "Zakat Calculator"; break;
-      default: title = "🌙 Noorify";
+      case 0:
+        title = _isBangla ? "নূরিফাই" : "Noorify";
+        break;
+      case 1:
+        title = _isBangla ? "ডিজিটাল তাসবিহ" : "Digital Tasbih";
+        break;
+      case 2:
+        title = _isBangla ? "রমজান ক্যালেন্ডার" : "Ramadan Calendar";
+        break;
+      case 3:
+        title = _isBangla ? "নামাজের সময়" : "Prayer Times";
+        break;
+      case 4:
+        title = _isBangla ? "যাকাত ক্যালকুলেটর" : "Zakat Calculator";
+        break;
+      default:
+        title = _isBangla ? "নূরিফাই" : "Noorify";
     }
+
+    final bool isHome = _selectedIndex == 0;
+    final titleColor = widget.isDarkMode ? Colors.white : primaryGreen;
 
     return AppBar(
       elevation: 0,
       centerTitle: true,
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
-      iconTheme: IconThemeData(color: widget.isDarkMode ? Colors.white : primaryGreen),
-      title: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: widget.isDarkMode ? Colors.white : primaryGreen,
-              fontSize: screenWidth < 360 ? 16 : 18,
-              fontWeight: FontWeight.bold,
+      iconTheme:
+          IconThemeData(color: widget.isDarkMode ? Colors.white : primaryGreen),
+      title: isHome
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("🌙", style: TextStyle(fontSize: 22, color: titleColor)),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: titleColor,
+                    fontSize: screenWidth < 360 ? 16 : 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: titleColor,
+                    fontSize: screenWidth < 360 ? 16 : 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Container(
+                  height: 3,
+                  width: 25,
+                  margin: const EdgeInsets.only(top: 4),
+                  decoration: BoxDecoration(
+                    color: widget.isDarkMode
+                        ? Colors.white.withOpacity(0.5)
+                        : primaryGreen.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ],
             ),
-          ),
-          Container(
-            height: 3,
-            width: 25,
-            margin: const EdgeInsets.only(top: 4),
-            decoration: BoxDecoration(
-              color: widget.isDarkMode ? Colors.white.withOpacity(0.5) : primaryGreen.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
-  Widget _buildCounterBody(Color primaryGreen, Duration animationDuration, double screenWidth) {
+  Widget _buildCounterBody(
+      Color primaryGreen, Duration animationDuration, double screenWidth) {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
       child: Center(
@@ -351,15 +417,23 @@ class _CounterPageState extends State<CounterPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 5), 
+              const SizedBox(height: 5),
               InkWell(
                 onTap: _showDhikrPicker,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
+                    color: widget.isDarkMode
+                        ? const Color(0xFF1E293B)
+                        : Colors.white,
                     borderRadius: BorderRadius.circular(16),
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4))
+                    ],
                   ),
                   child: Row(
                     children: [
@@ -369,8 +443,15 @@ class _CounterPageState extends State<CounterPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(_isBangla ? "যিকির" : "Dhikr", style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                            Text(_isBangla ? _currentDhikr.nameBn : _currentDhikr.nameEn, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                            Text(_isBangla ? "যিকির" : "Dhikr",
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.grey)),
+                            Text(
+                                _isBangla
+                                    ? _currentDhikr.nameBn
+                                    : _currentDhikr.nameEn,
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
@@ -399,7 +480,12 @@ class _CounterPageState extends State<CounterPage> {
       decoration: BoxDecoration(
         color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4))
+        ],
       ),
       child: DropdownButtonFormField<int>(
         value: _targetCount > 200 ? 33 : _targetCount,
@@ -409,8 +495,11 @@ class _CounterPageState extends State<CounterPage> {
           labelStyle: const TextStyle(fontSize: 14),
           border: InputBorder.none,
         ),
-        dropdownColor: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
-        style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black, fontSize: 15),
+        dropdownColor:
+            widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
+        style: TextStyle(
+            color: widget.isDarkMode ? Colors.white : Colors.black,
+            fontSize: 15),
         items: List.generate(200, (index) => index + 1)
             .map((e) => DropdownMenuItem(
                   value: e,
@@ -438,7 +527,10 @@ class _CounterPageState extends State<CounterPage> {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: primaryGreen, width: 2),
         boxShadow: [
-          BoxShadow(color: primaryGreen.withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 10))
+          BoxShadow(
+              color: primaryGreen.withOpacity(0.2),
+              blurRadius: 20,
+              offset: const Offset(0, 10))
         ],
       ),
       child: Column(
@@ -472,12 +564,18 @@ class _CounterPageState extends State<CounterPage> {
             const SizedBox(height: 12),
             Text(
               "${_formatNumber(_counter.toString())} / ${_formatNumber(_targetCount.toString())}",
-              style: TextStyle(color: primaryGreen, fontWeight: FontWeight.bold, fontSize: 18),
+              style: TextStyle(
+                  color: primaryGreen,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18),
             ),
           ] else
             Text(
               _isBangla ? "মোট গণনা" : "Total Count",
-              style: TextStyle(color: primaryGreen, fontWeight: FontWeight.bold, fontSize: 18),
+              style: TextStyle(
+                  color: primaryGreen,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18),
             ),
           const SizedBox(height: 10),
           FittedBox(
@@ -495,7 +593,8 @@ class _CounterPageState extends State<CounterPage> {
           Container(
             height: 6,
             width: 80,
-            decoration: BoxDecoration(color: primaryGreen, borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(
+                color: primaryGreen, borderRadius: BorderRadius.circular(10)),
           ),
         ],
       ),
@@ -511,7 +610,7 @@ class _CounterPageState extends State<CounterPage> {
             icon: Icons.remove,
             colors: [Colors.red.shade400, Colors.red.shade700],
             onPressed: _decrementCounter,
-            size: 56,
+            size: 48,
           ),
         ),
         const SizedBox(width: 20),
@@ -520,7 +619,7 @@ class _CounterPageState extends State<CounterPage> {
             icon: Icons.add,
             colors: [primaryGreen, Colors.green.shade800],
             onPressed: _incrementCounter,
-            size: 80,
+            size: 68,
             isLarge: true,
           ),
         ),
@@ -530,7 +629,7 @@ class _CounterPageState extends State<CounterPage> {
             icon: Icons.refresh,
             colors: [Colors.orange.shade700, Colors.orange.shade900],
             onPressed: _resetCounter,
-            size: 56,
+            size: 48,
           ),
         ),
       ],
@@ -547,15 +646,8 @@ class _CounterPageState extends State<CounterPage> {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: colors.last.withOpacity(0.4),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
       ),
       child: Material(
         color: Colors.transparent,
@@ -574,7 +666,7 @@ class _CounterPageState extends State<CounterPage> {
             child: Icon(
               icon,
               color: Colors.white,
-              size: isLarge ? 36 : 26,
+              size: isLarge ? 30 : 22,
             ),
           ),
         ),
@@ -584,7 +676,8 @@ class _CounterPageState extends State<CounterPage> {
 
   Widget _buildDrawer(Color primaryGreen) {
     return Drawer(
-      backgroundColor: widget.isDarkMode ? const Color(0xFF0F172A) : Colors.white,
+      backgroundColor:
+          widget.isDarkMode ? const Color(0xFF0F172A) : Colors.white,
       child: Column(
         children: [
           DrawerHeader(
@@ -610,7 +703,10 @@ class _CounterPageState extends State<CounterPage> {
                   const SizedBox(height: 12),
                   Text(
                     _isBangla ? "নূরিফাই" : "Noorify",
-                    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -620,7 +716,8 @@ class _CounterPageState extends State<CounterPage> {
             leading: Icon(Icons.language, color: primaryGreen),
             title: Text(
               _isBangla ? "Switch to English" : "বাংলা ভাষা করুন",
-              style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black87),
+              style: TextStyle(
+                  color: widget.isDarkMode ? Colors.white : Colors.black87),
             ),
             onTap: () {
               _toggleLanguage();
@@ -633,10 +730,11 @@ class _CounterPageState extends State<CounterPage> {
               color: primaryGreen,
             ),
             title: Text(
-              _isBangla 
+              _isBangla
                   ? (widget.isDarkMode ? "লাইট মোড" : "ডার্ক মোড")
                   : (widget.isDarkMode ? "Light Mode" : "Dark Mode"),
-              style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black87),
+              style: TextStyle(
+                  color: widget.isDarkMode ? Colors.white : Colors.black87),
             ),
             onTap: () {
               widget.onToggleTheme();
@@ -647,14 +745,16 @@ class _CounterPageState extends State<CounterPage> {
             leading: Icon(Icons.person, color: primaryGreen),
             title: Text(
               _isBangla ? "ডেভেলপার সম্পর্কে" : "About Developer",
-              style: TextStyle(color: widget.isDarkMode ? Colors.white : Colors.black87),
+              style: TextStyle(
+                  color: widget.isDarkMode ? Colors.white : Colors.black87),
             ),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AboutDeveloperPage(isDarkMode: widget.isDarkMode),
+                  builder: (context) =>
+                      AboutDeveloperPage(isDarkMode: widget.isDarkMode),
                 ),
               );
             },
@@ -665,7 +765,9 @@ class _CounterPageState extends State<CounterPage> {
             padding: const EdgeInsets.all(16.0),
             child: Text(
               "Version 1.0.0",
-              style: TextStyle(color: widget.isDarkMode ? Colors.white38 : Colors.grey, fontSize: 12),
+              style: TextStyle(
+                  color: widget.isDarkMode ? Colors.white38 : Colors.grey,
+                  fontSize: 12),
             ),
           )
         ],

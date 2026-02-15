@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -23,10 +22,6 @@ class RamadanPage extends StatefulWidget {
 
 class _RamadanPageState extends State<RamadanPage> {
   String _selectedCity = 'Dhaka';
-  late Timer _timer;
-  Duration _timeLeft = Duration.zero;
-  String _nextEvent = "";
-  DateTime _currentTime = DateTime.now();
   
   final Map<String, int> _cityAdjustments = {
     'Dhaka': 0, 'Chattogram': -5, 'Sylhet': -6, 'Rajshahi': 7, 
@@ -71,69 +66,6 @@ class _RamadanPageState extends State<RamadanPage> {
     RamadanDay(ramadan: 30, date: DateTime(2026, 3, 19), sehri: "04:46", iftar: "18:17"),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _startTimer();
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) {
-        setState(() {
-          _currentTime = DateTime.now();
-          _calculateNextEvent();
-        });
-      }
-    });
-  }
-
-  void _calculateNextEvent() {
-    final now = DateTime.now();
-    int adj = _cityAdjustments[_selectedCity] ?? 0;
-
-    RamadanDay? todayData;
-    try {
-      todayData = _ramadanData.firstWhere(
-        (d) => d.date.year == now.year && d.date.month == now.month && d.date.day == now.day
-      );
-    } catch (_) {
-      _nextEvent = widget.isBangla ? "রমজান শুরু হয়নি" : "Ramadan not started";
-      _timeLeft = Duration.zero;
-      return;
-    }
-
-    DateTime sehriTime = _parseTime(todayData.date, todayData.sehri, adj);
-    DateTime iftarTime = _parseTime(todayData.date, todayData.iftar, adj);
-
-    if (now.isBefore(sehriTime)) {
-      _nextEvent = widget.isBangla ? "সেহরির বাকি" : "Next Sehri in";
-      _timeLeft = sehriTime.difference(now);
-    } else if (now.isBefore(iftarTime)) {
-      _nextEvent = widget.isBangla ? "ইফতারের বাকি" : "Next Iftar in";
-      _timeLeft = iftarTime.difference(now);
-    } else {
-      final tomorrow = now.add(const Duration(days: 1));
-      try {
-        final tomorrowData = _ramadanData.firstWhere(
-          (d) => d.date.year == tomorrow.year && d.date.month == tomorrow.month && d.date.day == tomorrow.day
-        );
-        DateTime nextSehri = _parseTime(tomorrowData.date, tomorrowData.sehri, adj);
-        _nextEvent = widget.isBangla ? "সেহরির বাকি" : "Next Sehri in";
-        _timeLeft = nextSehri.difference(now);
-      } catch (_) {
-        _nextEvent = widget.isBangla ? "রমজান শেষ" : "Ramadan Ended";
-        _timeLeft = Duration.zero;
-      }
-    }
-  }
-
   DateTime _parseTime(DateTime date, String timeStr, int adjMinutes) {
     final parts = timeStr.split(':');
     return DateTime(date.year, date.month, date.day, int.parse(parts[0]), int.parse(parts[1])).add(Duration(minutes: adjMinutes));
@@ -152,13 +84,6 @@ class _RamadanPageState extends State<RamadanPage> {
       output = output.replaceAll(key, conversionMap[key]!);
     }
     return output;
-  }
-
-  String _formatDuration(Duration d) {
-    String h = d.inHours.toString().padLeft(2, '0');
-    String m = (d.inMinutes % 60).toString().padLeft(2, '0');
-    String s = (d.inSeconds % 60).toString().padLeft(2, '0');
-    return _toBn("$h:$m:$s");
   }
 
   void _showLocationPicker() {
@@ -254,9 +179,6 @@ class _RamadanPageState extends State<RamadanPage> {
               ),
             ),
             const SizedBox(height: 20),
-            // Countdown Timer Card
-            _buildTimerCard(primaryGreen),
-            const SizedBox(height: 30),
             // Calendar Table
             _buildCalendarTable(primaryGreen),
             const SizedBox(height: 20),
@@ -265,25 +187,6 @@ class _RamadanPageState extends State<RamadanPage> {
             const SizedBox(height: 30),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildTimerCard(Color primaryGreen) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [primaryGreen, Colors.green.shade800]),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [BoxShadow(color: primaryGreen.withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 8))],
-      ),
-      child: Column(
-        children: [
-          Text(_nextEvent, style: const TextStyle(color: Colors.white70, fontSize: 18)),
-          const SizedBox(height: 10),
-          Text(_formatDuration(_timeLeft), style: const TextStyle(color: Colors.white, fontSize: 42, fontWeight: FontWeight.bold, letterSpacing: 2)),
-        ],
       ),
     );
   }
