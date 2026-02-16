@@ -26,8 +26,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _controller.forward();
 
-    // Navigate to home after 3 seconds
-    Timer(const Duration(seconds: 3), () {
+    // Navigate to home after 2 seconds
+    Timer(const Duration(seconds: 2), () {
       widget.onFinished();
     });
   }

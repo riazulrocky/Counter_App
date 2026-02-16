@@ -71,8 +71,8 @@ class _DoaPageState extends State<DoaPage> {
       arabic: "الْحَمْدُ للهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
       uccharonBn: "আলহামদুলিল্লাহিল্লাজি আহইয়ানা বা’দা মা আমাতানা ওয়া ইলাইহিন নুশুর",
       uccharonEn: "Alhamdu lillahil-ladhi ahyana ba'da ma amatana wa ilayhin-nushur",
-      meaningBn: "সব প্রশংসা আল্লাহর জন্য, যিনি আমাদের মৃত (নিদ্রা) হওয়ার পর জীবিত করলেন এবং তাঁর দিকেই পুনরুত্থান।",
-      meaningEn: "All praise is for Allah who gave us life after causing us to die and to Him is the resurrection.",
+      meaningBn: "সব প্রশংসা আল্লাহর জন্য, যিনি আমাদের আহার করিয়েছেন, পান করিয়েছেন এবং মুসলিম বানিয়েছেন।",
+      meaningEn: "All praise is for Allah who fed us, gave us drink, and made us Muslims.",
       categoryBn: "দৈনন্দিন",
       categoryEn: "Daily",
     ),
@@ -112,7 +112,7 @@ class _DoaPageState extends State<DoaPage> {
     DoaData(
       titleBn: "সু-সন্তান লাভের দোয়া",
       titleEn: "Dua for Pious Children",
-      arabic: "رَبِّ هَبْ لِي مِن لَّدُنكَ ذُرِّيَّةً طَيِّبَةً ۖ إِنَّكَ سَمِيعُ الدُّعَاءِ",
+      arabic: "رَبِّ هَبْ لِي مِن لَّدُنكَ ذُرِّيَّةً طَيِّبَةً ۖ إِنَّكَ সَمِيْعُ الدُّعَاءِ",
       uccharonBn: "রাব্বি হাবলী মিল্লাদুনকা যুররিয়্যাতান ত্বাইয়্যিবাতান, ইন্নাকা সামিউদ দুআ",
       uccharonEn: "Rabbi hab li mil ladunka dhurriyyatan tayyibatan, innaka sami'ud-du'a",
       meaningBn: "হে আমার প্রতিপালক! আপনার নিকট থেকে আমাকে সৎ বংশধর দান করুন। নিশ্চয়ই আপনি প্রার্থনা শ্রবণকারী।",
@@ -255,155 +255,168 @@ class _DoaPageState extends State<DoaPage> {
 
     return Scaffold(
       backgroundColor: scaffoldBg,
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Container(
-              decoration: BoxDecoration(
-                color: surfaceColor,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: TextField(
-                onChanged: (value) => setState(() => _searchQuery = value),
-                style: TextStyle(color: textColor),
-                decoration: InputDecoration(
-                  hintText: widget.isBangla ? "দোয়া খুঁজুন..." : "Search Doa...",
-                  hintStyle: TextStyle(color: subtextColor),
-                  prefixIcon: Icon(Icons.search, color: primaryGreen),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 50,
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              scrollDirection: Axis.horizontal,
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                final cat = categories[index];
-                final isSelected = _selectedCategory == cat;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: FilterChip(
-                    label: Text(
-                      cat == "All" ? (widget.isBangla ? "সব" : "All") : 
-                      (widget.isBangla ? _getCategoryBn(cat) : cat),
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : (widget.isDarkMode ? Colors.white70 : Colors.black87),
-                        fontSize: 12,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() => _selectedCategory = cat);
-                    },
-                    backgroundColor: surfaceColor,
-                    selectedColor: primaryGreen,
-                    checkmarkColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(
-                        color: isSelected ? Colors.transparent : (widget.isDarkMode ? Colors.white10 : Colors.grey.shade200),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _filteredDoas.length,
-              itemBuilder: (context, index) {
-                final doa = _filteredDoas[index];
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final double horizontalPadding = (maxWidth * 0.05).clamp(12.0, 60.0);
+
+          return Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(horizontalPadding, 12, horizontalPadding, 8),
+                child: Container(
                   decoration: BoxDecoration(
                     color: surfaceColor,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(14),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(widget.isDarkMode ? 0.2 : 0.05),
+                        color: Colors.black.withOpacity(0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(20),
-                      onTap: () => _showDoaDetail(context, doa, index + 1, primaryGreen, surfaceColor, textColor, subtextColor),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 44,
-                              height: 44,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: primaryGreen.withOpacity(0.1),
-                                shape: BoxShape.circle,
+                  child: TextField(
+                    onChanged: (value) => setState(() => _searchQuery = value),
+                    style: TextStyle(color: textColor, fontSize: (maxWidth * 0.038).clamp(12.0, 15.0)),
+                    decoration: InputDecoration(
+                      hintText: widget.isBangla ? "দোয়া খুঁজুন..." : "Search Doa...",
+                      hintStyle: TextStyle(color: subtextColor, fontSize: (maxWidth * 0.035).clamp(12.0, 14.0)),
+                      prefixIcon: Icon(Icons.search, color: primaryGreen, size: (maxWidth * 0.05).clamp(16.0, 22.0)),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: (maxWidth * 0.11).clamp(40.0, 50.0),
+                child: ListView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding - 4),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    final cat = categories[index];
+                    final isSelected = _selectedCategory == cat;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 3),
+                      child: FilterChip(
+                        label: Text(
+                          cat == "All" ? (widget.isBangla ? "সব" : "All") : 
+                          (widget.isBangla ? _getCategoryBn(cat) : cat),
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : (widget.isDarkMode ? Colors.white70 : Colors.black87),
+                            fontSize: (maxWidth * 0.028).clamp(10.0, 12.0),
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        ),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() => _selectedCategory = cat);
+                        },
+                        backgroundColor: surfaceColor,
+                        selectedColor: primaryGreen,
+                        checkmarkColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                          side: BorderSide(
+                            color: isSelected ? Colors.transparent : (widget.isDarkMode ? Colors.white10 : Colors.grey.shade200),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: ListView.builder(
+                      padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 12),
+                      itemCount: _filteredDoas.length,
+                      itemBuilder: (context, index) {
+                        final doa = _filteredDoas[index];
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                            color: surfaceColor,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(widget.isDarkMode ? 0.15 : 0.03),
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
                               ),
-                              child: Text(
-                                "${index + 1}",
-                                style: TextStyle(
-                                  color: primaryGreen,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                            ],
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(16),
+                              onTap: () => _showDoaDetail(context, doa, index + 1, primaryGreen, surfaceColor, textColor, maxWidth),
+                              child: Padding(
+                                padding: EdgeInsets.all((maxWidth * 0.035).clamp(10.0, 16.0)),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: (maxWidth * 0.09).clamp(32.0, 42.0),
+                                      height: (maxWidth * 0.09).clamp(32.0, 42.0),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: primaryGreen.withOpacity(0.1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Text(
+                                        "${index + 1}",
+                                        style: TextStyle(
+                                          color: primaryGreen,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: (maxWidth * 0.032).clamp(11.0, 14.0),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            widget.isBangla ? doa.titleBn : doa.titleEn,
+                                            style: TextStyle(
+                                              color: textColor,
+                                              fontSize: (maxWidth * 0.038).clamp(13.0, 16.0),
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            widget.isBangla ? doa.categoryBn : doa.categoryEn,
+                                            style: TextStyle(
+                                              color: primaryGreen,
+                                              fontSize: (maxWidth * 0.028).clamp(9.0, 11.0),
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Icon(Icons.arrow_forward_ios_rounded, size: 12, color: subtextColor.withOpacity(0.3)),
+                                  ],
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    widget.isBangla ? doa.titleBn : doa.titleEn,
-                                    style: TextStyle(
-                                      color: textColor,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    widget.isBangla ? doa.categoryBn : doa.categoryEn,
-                                    style: TextStyle(
-                                      color: primaryGreen,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Icon(Icons.arrow_forward_ios_rounded, size: 14, color: subtextColor.withOpacity(0.3)),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-        ],
+                ),
+              ),
+            ],
+          );
+        }
       ),
     );
   }
@@ -422,91 +435,94 @@ class _DoaPageState extends State<DoaPage> {
     }
   }
 
-  void _showDoaDetail(BuildContext context, DoaData doa, int index, Color primary, Color surface, Color text, Color subtext) {
+  void _showDoaDetail(BuildContext context, DoaData doa, int index, Color primary, Color surface, Color text, double maxWidth) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        contentPadding: const EdgeInsets.all(24),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Text(
-                  widget.isBangla ? doa.titleBn : doa.titleEn,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: text,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding: const EdgeInsets.all(20),
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Text(
+                    widget.isBangla ? doa.titleBn : doa.titleEn,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: text,
+                      fontSize: (maxWidth * 0.045).clamp(16.0, 20.0),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: primary.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: primary.withOpacity(0.1)),
-                ),
-                child: Text(
-                  doa.arabic,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: primary,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'serif',
-                    height: 1.6,
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: primary.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: primary.withOpacity(0.1)),
+                  ),
+                  child: Text(
+                    doa.arabic,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: primary,
+                      fontSize: (maxWidth * 0.055).clamp(18.0, 24.0),
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'serif',
+                      height: 1.6,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              _buildSection(widget.isBangla ? "উচ্চারণ:" : "Pronunciation:", widget.isBangla ? doa.uccharonBn : doa.uccharonEn, primary, text),
-              const SizedBox(height: 16),
-              _buildSection(widget.isBangla ? "অর্থ:" : "Meaning:", widget.isBangla ? doa.meaningBn : doa.meaningEn, primary, text),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    elevation: 0,
+                const SizedBox(height: 20),
+                _buildSection(widget.isBangla ? "উচ্চারণ:" : "Pronunciation:", widget.isBangla ? doa.uccharonBn : doa.uccharonEn, primary, text, maxWidth),
+                const SizedBox(height: 14),
+                _buildSection(widget.isBangla ? "অর্থ:" : "Meaning:", widget.isBangla ? doa.meaningBn : doa.meaningEn, primary, text, maxWidth),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      elevation: 0,
+                    ),
+                    child: Text(widget.isBangla ? "বন্ধ করুন" : "Close", style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
-                  child: Text(widget.isBangla ? "বন্ধ করুন" : "Close"),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildSection(String label, String content, Color primary, Color text) {
+  Widget _buildSection(String label, String content, Color primary, Color text, double maxWidth) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: TextStyle(color: primary, fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 0.5),
+          style: TextStyle(color: primary, fontWeight: FontWeight.bold, fontSize: (maxWidth * 0.032).clamp(11.0, 13.0), letterSpacing: 0.5),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Text(
           content,
           style: TextStyle(
             color: text,
-            fontSize: 16,
-            height: 1.5,
+            fontSize: (maxWidth * 0.038).clamp(13.0, 15.0),
+            height: 1.45,
             fontWeight: FontWeight.w500,
           ),
         ),
