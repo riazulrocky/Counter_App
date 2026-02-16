@@ -154,7 +154,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
-        final double horizontalPadding = maxWidth > 600 ? maxWidth * 0.15 : 20.0;
+        final double horizontalPadding = (maxWidth * 0.05).clamp(16.0, 80.0);
 
         return Scaffold(
           backgroundColor: Colors.transparent,
@@ -178,14 +178,14 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.location_on, color: primaryGreen),
+                            Icon(Icons.location_on, color: primaryGreen, size: (maxWidth * 0.05).clamp(18.0, 22.0)),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(widget.isBangla ? "লোকেশন" : "Location", style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                                  Text(widget.isBangla ? _cityNamesBn[widget.selectedCity]! : widget.selectedCity, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                  Text(widget.isBangla ? "লোকেশন" : "Location", style: TextStyle(fontSize: (maxWidth * 0.03).clamp(10.0, 12.0), color: Colors.grey)),
+                                  Text(widget.isBangla ? _cityNamesBn[widget.selectedCity]! : widget.selectedCity, style: TextStyle(fontSize: (maxWidth * 0.04).clamp(14.0, 16.0), fontWeight: FontWeight.bold)),
                                 ],
                               ),
                             ),
@@ -200,33 +200,33 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
                       child: Padding(
-                        padding: const EdgeInsets.all(20),
+                        padding: EdgeInsets.all((maxWidth * 0.05).clamp(16.0, 24.0)),
                         child: Column(
                           children: [
                             FittedBox(
                               fit: BoxFit.scaleDown,
-                              child: Text(_toBn(DateFormat('EEEE, dd MMMM, yyyy').format(_currentTime)), textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: widget.isDarkMode ? Colors.white70 : Colors.black54)),
+                              child: Text(_toBn(DateFormat('EEEE, dd MMMM, yyyy').format(_currentTime)), textAlign: TextAlign.center, style: TextStyle(fontSize: (maxWidth * 0.04).clamp(13.0, 15.0), fontWeight: FontWeight.w600, color: widget.isDarkMode ? Colors.white70 : Colors.black54)),
                             ),
                             const SizedBox(height: 8),
                             FittedBox(
                               fit: BoxFit.scaleDown,
-                              child: Text(_toBn(DateFormat('hh:mm:ss a').format(_currentTime)), style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: primaryGreen)),
+                              child: Text(_toBn(DateFormat('hh:mm:ss a').format(_currentTime)), style: TextStyle(fontSize: (maxWidth * 0.07).clamp(22.0, 30.0), fontWeight: FontWeight.bold, color: primaryGreen)),
                             ),
                             const Divider(height: 30),
-                            _buildPrayerRow(widget.isBangla ? "ফজর" : "Fajr", prayerTimes.fajr, primaryGreen),
-                            _buildPrayerRow(widget.isBangla ? "সূর্যোদয়" : "Sunrise", prayerTimes.sunrise, Colors.orange),
-                            _buildPrayerRow(widget.isBangla ? "যোহর" : "Dhuhr", prayerTimes.dhuhr, primaryGreen),
-                            _buildPrayerRow(widget.isBangla ? "আসর" : "Asr", prayerTimes.asr, primaryGreen),
-                            _buildPrayerRow(widget.isBangla ? "মাগরিব" : "Maghrib", prayerTimes.maghrib, primaryGreen),
-                            _buildPrayerRow(widget.isBangla ? "এশা" : "Isha", prayerTimes.isha, primaryGreen),
+                            _buildPrayerRow(widget.isBangla ? "ফজর" : "Fajr", prayerTimes.fajr, primaryGreen, maxWidth),
+                            _buildPrayerRow(widget.isBangla ? "সূর্যোদয়" : "Sunrise", prayerTimes.sunrise, Colors.orange, maxWidth),
+                            _buildPrayerRow(widget.isBangla ? "যোহর" : "Dhuhr", prayerTimes.dhuhr, primaryGreen, maxWidth),
+                            _buildPrayerRow(widget.isBangla ? "আসর" : "Asr", prayerTimes.asr, primaryGreen, maxWidth),
+                            _buildPrayerRow(widget.isBangla ? "মাগরিব" : "Maghrib", prayerTimes.maghrib, primaryGreen, maxWidth),
+                            _buildPrayerRow(widget.isBangla ? "এশা" : "Isha", prayerTimes.isha, primaryGreen, maxWidth),
                           ],
                         ),
                       ),
                     ),
                     const SizedBox(height: 30),
-                    Text(widget.isBangla ? "আগামী ৭ দিনের সূচি" : "Next 7 Days Schedule", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: widget.isDarkMode ? Colors.white : Colors.black87)),
+                    Text(widget.isBangla ? "আগামী ৭ দিনের সূচি" : "Next 7 Days Schedule", style: TextStyle(fontSize: (maxWidth * 0.045).clamp(15.0, 18.0), fontWeight: FontWeight.bold, color: widget.isDarkMode ? Colors.white : Colors.black87)),
                     const SizedBox(height: 12),
-                    _buildWeeklySchedule(primaryGreen),
+                    _buildWeeklySchedule(primaryGreen, maxWidth),
                   ],
                 ),
               ),
@@ -237,20 +237,20 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
     );
   }
 
-  Widget _buildPrayerRow(String label, DateTime time, Color color) {
+  Widget _buildPrayerRow(String label, DateTime time, Color color, double maxWidth) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(children: [Icon(Icons.access_time, size: 20, color: color.withOpacity(0.7)), const SizedBox(width: 12), Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500))]),
-          FittedBox(fit: BoxFit.scaleDown, child: Text(_toBn(DateFormat.jm().format(time)), style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 18))),
+          Row(children: [Icon(Icons.access_time, size: (maxWidth * 0.045).clamp(16.0, 20.0), color: color.withOpacity(0.7)), const SizedBox(width: 12), Text(label, style: TextStyle(fontSize: (maxWidth * 0.04).clamp(13.0, 15.0), fontWeight: FontWeight.w500))]),
+          FittedBox(fit: BoxFit.scaleDown, child: Text(_toBn(DateFormat.jm().format(time)), style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: (maxWidth * 0.045).clamp(15.0, 18.0)))),
         ],
       ),
     );
   }
 
-  Widget _buildWeeklySchedule(Color primaryGreen) {
+  Widget _buildWeeklySchedule(Color primaryGreen, double maxWidth) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -263,14 +263,14 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
           child: ExpansionTile(
-            title: Text(_toBn(DateFormat('EEEE, d MMMM').format(date)), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+            title: Text(_toBn(DateFormat('EEEE, d MMMM').format(date)), style: TextStyle(fontWeight: FontWeight.w600, fontSize: (maxWidth * 0.035).clamp(12.0, 14.0))),
             iconColor: primaryGreen,
             children: [
-              _buildSmallTime(widget.isBangla ? "ফজর" : "Fajr", times.fajr),
-              _buildSmallTime(widget.isBangla ? "যোহর" : "Dhuhr", times.dhuhr),
-              _buildSmallTime(widget.isBangla ? "আসর" : "Asr", times.asr),
-              _buildSmallTime(widget.isBangla ? "মাগরিব" : "Maghrib", times.maghrib),
-              _buildSmallTime(widget.isBangla ? "এশা" : "Isha", times.isha),
+              _buildSmallTime(widget.isBangla ? "ফজর" : "Fajr", times.fajr, maxWidth),
+              _buildSmallTime(widget.isBangla ? "যোহর" : "Dhuhr", times.dhuhr, maxWidth),
+              _buildSmallTime(widget.isBangla ? "আসর" : "Asr", times.asr, maxWidth),
+              _buildSmallTime(widget.isBangla ? "মাগরিব" : "Maghrib", times.maghrib, maxWidth),
+              _buildSmallTime(widget.isBangla ? "এশা" : "Isha", times.isha, maxWidth),
               const SizedBox(height: 10),
             ],
           ),
@@ -279,7 +279,8 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
     );
   }
 
-  Widget _buildSmallTime(String label, DateTime time) {
-    return Padding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(label, style: const TextStyle(color: Colors.grey, fontSize: 13)), Text(_toBn(DateFormat.jm().format(time)), style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13))]));
+  Widget _buildSmallTime(String label, DateTime time, double maxWidth) {
+    final double fontSize = (maxWidth * 0.032).clamp(11.0, 13.0);
+    return Padding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(label, style: TextStyle(color: Colors.grey, fontSize: fontSize)), Text(_toBn(DateFormat.jm().format(time)), style: TextStyle(fontWeight: FontWeight.w500, fontSize: fontSize))]));
   }
 }

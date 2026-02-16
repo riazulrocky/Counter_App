@@ -40,6 +40,7 @@ class _HomePageState extends State<HomePage> {
   late Timer _timer;
   Duration _timeLeft = Duration.zero;
   String _nextEvent = "";
+  bool _showCountdown = true;
 
   final Map<String, int> _cityAdjustments = {
     'Dhaka': 0,
@@ -434,38 +435,71 @@ class _HomePageState extends State<HomePage> {
     final now = DateTime.now();
     int adj = _cityAdjustments[widget.selectedCity] ?? 0;
 
-    RamadanDay? todayData = _getTodayData();
-    if (todayData == null) {
+    // Get First Day of Ramadan
+    final DateTime firstRamadanDate = _ramadanData.first.date;
+    // রমজান শুরুর ৩ দিন আগে
+    final DateTime countdownStartDate = firstRamadanDate.subtract(const Duration(days: 3));
+    final DateTime firstSehriTime = _parseTime(firstRamadanDate, _ramadanData.first.sehri, adj);
+
+    // Get Last Day of Ramadan
+    final RamadanDay lastRamadanData = _ramadanData.last;
+    final DateTime lastIftarTime = _parseTime(lastRamadanData.date, lastRamadanData.iftar, adj);
+
+    // CASE 1: Before Countdown (More than 3 days away)
+    if (now.isBefore(countdownStartDate)) {
+      _showCountdown = false;
       _nextEvent = widget.isBangla ? "রমজান শুরু হয়নি" : "Ramadan not started";
       _timeLeft = Duration.zero;
       return;
     }
 
-    DateTime sehriTime = _parseTime(todayData.date, todayData.sehri, adj);
-    DateTime iftarTime = _parseTime(todayData.date, todayData.iftar, adj);
-
-    if (now.isBefore(sehriTime)) {
-      _nextEvent = widget.isBangla ? "সেহরির বাকি" : "Sehri Ends In";
-      _timeLeft = sehriTime.difference(now);
-    } else if (now.isBefore(iftarTime)) {
-      _nextEvent = widget.isBangla ? "ইফতারের বাকি" : "Iftar Begins In";
-      _timeLeft = iftarTime.difference(now);
-    } else {
-      final tomorrow = now.add(const Duration(days: 1));
-      try {
-        final tomorrowData = _ramadanData.firstWhere((d) =>
-            d.date.year == tomorrow.year &&
-            d.date.month == tomorrow.month &&
-            d.date.day == tomorrow.day);
-        DateTime nextSehri =
-            _parseTime(tomorrowData.date, tomorrowData.sehri, adj);
-        _nextEvent = widget.isBangla ? "সেহরির বাকি" : "Next Sehri In";
-        _timeLeft = nextSehri.difference(now);
-      } catch (_) {
-        _nextEvent = widget.isBangla ? "রমজান শেষ" : "Ramadan Ended";
-        _timeLeft = Duration.zero;
-      }
+    // CASE 2: Countdown Period (3 days before 1st Ramadan)
+    if (now.isBefore(firstSehriTime)) {
+      _showCountdown = true;
+      _nextEvent = widget.isBangla ? "পবিত্র রমজানের বাকি" : "Ramadan Starts In";
+      _timeLeft = firstSehriTime.difference(now);
+      return;
     }
+
+    // CASE 3: During Ramadan
+    if (now.isBefore(lastIftarTime)) {
+      _showCountdown = true;
+      RamadanDay? todayData = _getTodayData();
+      
+      if (todayData != null) {
+        DateTime sehriTime = _parseTime(todayData.date, todayData.sehri, adj);
+        DateTime iftarTime = _parseTime(todayData.date, todayData.iftar, adj);
+
+        if (now.isBefore(sehriTime)) {
+          _nextEvent = widget.isBangla ? "সেহরির বাকি" : "Sehri Ends In";
+          _timeLeft = sehriTime.difference(now);
+        } else if (now.isBefore(iftarTime)) {
+          _nextEvent = widget.isBangla ? "ইফতারের বাকি" : "Iftar Begins In";
+          _timeLeft = iftarTime.difference(now);
+        } else {
+          // After Iftar, show countdown to tomorrow's Sehri
+          final tomorrow = now.add(const Duration(days: 1));
+          try {
+            final tomorrowData = _ramadanData.firstWhere((d) =>
+                d.date.year == tomorrow.year &&
+                d.date.month == tomorrow.month &&
+                d.date.day == tomorrow.day);
+            DateTime nextSehri = _parseTime(tomorrowData.date, tomorrowData.sehri, adj);
+            _nextEvent = widget.isBangla ? "সেহরির বাকি" : "Next Sehri In";
+            _timeLeft = nextSehri.difference(now);
+          } catch (_) {
+            _nextEvent = widget.isBangla ? "রমজান শেষ" : "Ramadan Ended";
+            _timeLeft = Duration.zero;
+          }
+        }
+      }
+      return;
+    }
+
+    // CASE 4: After Last Iftar (Eid)
+    _showCountdown = true;
+    _nextEvent = widget.isBangla ? "ঈদ মোবারক!" : "Eid Mubarak!";
+    _timeLeft = Duration.zero;
   }
 
   RamadanDay? _getTodayData() {
@@ -509,6 +543,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   String _formatDuration(Duration d) {
+    if (d == Duration.zero && (_nextEvent.contains("Eid") || _nextEvent.contains("ঈদ"))) return "";
     String h = d.inHours.toString().padLeft(2, '0');
     String m = (d.inMinutes % 60).toString().padLeft(2, '0');
     String s = (d.inSeconds % 60).toString().padLeft(2, '0');
@@ -608,9 +643,7 @@ class _HomePageState extends State<HomePage> {
 
     return LayoutBuilder(builder: (context, constraints) {
       final double maxWidth = constraints.maxWidth;
-      final bool isTablet = maxWidth > 600;
-      final bool isLargeTablet = maxWidth > 900;
-      final double horizontalPadding = isLargeTablet ? maxWidth * 0.15 : (isTablet ? maxWidth * 0.1 : 20.0);
+      final double horizontalPadding = (maxWidth * 0.05).clamp(16.0, 100.0);
 
       return Scaffold(
         backgroundColor: Colors.transparent,
@@ -637,7 +670,7 @@ class _HomePageState extends State<HomePage> {
                                 : "Assalamu Alaikum",
                             style: TextStyle(
                               color: primaryGreen,
-                              fontSize: isTablet ? 16 : 14,
+                              fontSize: (maxWidth * 0.035).clamp(11.0, 14.0),
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.5,
                             ),
@@ -647,7 +680,7 @@ class _HomePageState extends State<HomePage> {
                             _getGreeting(),
                             style: TextStyle(
                               color: textColor,
-                              fontSize: isTablet ? 32 : 24,
+                              fontSize: (maxWidth * 0.065).clamp(18.0, 24.0),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -656,34 +689,35 @@ class _HomePageState extends State<HomePage> {
                       InkWell(
                         onTap: _showLocationPicker,
                         child: Container(
-                          padding: EdgeInsets.all(isTablet ? 14 : 10),
+                          padding: EdgeInsets.all((maxWidth * 0.025).clamp(8.0, 12.0)),
                           decoration: BoxDecoration(
                             color: primaryGreen.withOpacity(0.1),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(Icons.location_on_outlined,
-                              color: primaryGreen, size: isTablet ? 30 : 24),
+                              color: primaryGreen, size: (maxWidth * 0.055).clamp(18.0, 24.0)),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: isTablet ? 32 : 24),
+                  SizedBox(height: (maxWidth * 0.04).clamp(10.0, 20.0)),
 
-                  // Ramadan Card
-                  _buildModernCountdownCard(primaryGreen, isTablet),
+                  // Ramadan Card (Conditionally shown)
+                  if (_showCountdown) ...[
+                    _buildModernCountdownCard(primaryGreen, maxWidth),
+                    SizedBox(height: (maxWidth * 0.04).clamp(10.0, 20.0)),
+                  ],
 
-                  SizedBox(height: isTablet ? 32 : 24),
-
-                  // Today's Timing Section (New)
+                  // Today's Timing Section
                   _buildTodayScheduleSection(primaryGreen, surfaceColor, textColor, maxWidth),
 
-                  SizedBox(height: isTablet ? 40 : 32),
+                  SizedBox(height: (maxWidth * 0.05).clamp(12.0, 24.0)),
 
                   // Daily Inspiration Section
                   _buildDailyInspiration(
                       primaryGreen, surfaceColor, textColor, subtextColor, maxWidth),
 
-                  SizedBox(height: isTablet ? 40 : 32),
+                  SizedBox(height: (maxWidth * 0.05).clamp(12.0, 24.0)),
 
                   // Feature Grid Label
                   Row(
@@ -694,27 +728,25 @@ class _HomePageState extends State<HomePage> {
                             ? "প্রয়োজনীয় সেবা"
                             : "Essential Services",
                         style: TextStyle(
-                          fontSize: isTablet ? 22 : 18,
+                          fontSize: (maxWidth * 0.04).clamp(14.0, 18.0),
                           fontWeight: FontWeight.bold,
                           color: textColor,
                         ),
                       ),
                       Icon(Icons.grid_view_rounded,
-                          size: isTablet ? 24 : 20, color: subtextColor),
+                          size: (maxWidth * 0.04).clamp(18.0, 22.0), color: subtextColor),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
 
-                  // Responsive Feature Grid
-                  GridView(
+                  // Responsive Feature Grid (3 columns as requested)
+                  GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: isLargeTablet ? 200 : (isTablet ? 180 : 130),
-                      mainAxisSpacing: isTablet ? 16 : 12,
-                      crossAxisSpacing: isTablet ? 16 : 12,
-                      childAspectRatio: isTablet ? 1.0 : 0.85,
-                    ),
+                    crossAxisCount: 3,
+                    mainAxisSpacing: (maxWidth * 0.025).clamp(6.0, 10.0),
+                    crossAxisSpacing: (maxWidth * 0.025).clamp(6.0, 10.0),
+                    childAspectRatio: 0.95,
                     children: [
                       _buildModernFeatureCard(
                         widget.isBangla ? "নামাজের সময়" : "Prayer Times",
@@ -723,7 +755,7 @@ class _HomePageState extends State<HomePage> {
                         surfaceColor,
                         textColor,
                         () => widget.onNavigate(3),
-                        isTablet,
+                        maxWidth,
                       ),
                       _buildModernFeatureCard(
                         widget.isBangla
@@ -734,7 +766,7 @@ class _HomePageState extends State<HomePage> {
                         surfaceColor,
                         textColor,
                         () => widget.onNavigate(2),
-                        isTablet,
+                        maxWidth,
                       ),
                       _buildModernFeatureCard(
                         widget.isBangla ? "ডিজিটাল তাসবিহ" : "Digital Tasbih",
@@ -743,7 +775,7 @@ class _HomePageState extends State<HomePage> {
                         surfaceColor,
                         textColor,
                         () => widget.onNavigate(1),
-                        isTablet,
+                        maxWidth,
                       ),
                       _buildModernFeatureCard(
                         widget.isBangla
@@ -754,7 +786,7 @@ class _HomePageState extends State<HomePage> {
                         surfaceColor,
                         textColor,
                         () => widget.onNavigate(5),
-                        isTablet,
+                        maxWidth,
                       ),
                       _buildModernFeatureCard(
                         widget.isBangla ? "ছোট দোয়া" : "Short Dua",
@@ -763,7 +795,7 @@ class _HomePageState extends State<HomePage> {
                         surfaceColor,
                         textColor,
                         () => widget.onNavigate(6),
-                        isTablet,
+                        maxWidth,
                       ),
                       _buildModernFeatureCard(
                         widget.isBangla ? "আল্লাহর নাম" : "99 Names",
@@ -772,13 +804,13 @@ class _HomePageState extends State<HomePage> {
                         surfaceColor,
                         textColor,
                         () => widget.onNavigate(4),
-                        isTablet,
+                        maxWidth,
                       ),
                     ],
                   ),
-                  SizedBox(height: isTablet ? 40 : 32),
+                  SizedBox(height: (maxWidth * 0.05).clamp(12.0, 24.0)),
 
-                  // Ramadan Dua Section (New)
+                  // Ramadan Dua Section
                   _buildRamadanDuaSection(
                       primaryGreen, surfaceColor, textColor, subtextColor, maxWidth),
 
@@ -792,11 +824,18 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Widget _buildModernCountdownCard(Color primaryGreen, bool isTablet) {
+  Widget _buildModernCountdownCard(Color primaryGreen, double maxWidth) {
+    final double cardPadding = (maxWidth * 0.045).clamp(12.0, 28.0);
+    final double titleSize = (maxWidth * 0.03).clamp(9.0, 12.0);
+    final double eventSize = (maxWidth * 0.035).clamp(13.0, 18.0);
+    final double timeSize = (maxWidth * 0.09).clamp(26.0, 40.0);
+    final double footerSize = (maxWidth * 0.03).clamp(9.0, 13.0);
+    final double bgIconSize = (maxWidth * 0.3).clamp(70.0, 140.0);
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         gradient: LinearGradient(
           colors: [primaryGreen, Colors.green.shade800],
           begin: Alignment.topLeft,
@@ -804,68 +843,82 @@ class _HomePageState extends State<HomePage> {
         ),
         boxShadow: [
           BoxShadow(
-            color: primaryGreen.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            color: primaryGreen.withOpacity(0.2),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Stack(
         children: [
           Positioned(
-            right: -20,
-            top: -20,
+            right: -12,
+            top: -12,
             child: Icon(
-              Icons.dark_mode_outlined,
-              size: isTablet ? 200 : 120,
+              _nextEvent.contains("Eid") || _nextEvent.contains("ঈদ") 
+                  ? Icons.celebration_rounded 
+                  : Icons.dark_mode_outlined,
+              size: bgIconSize,
               color: Colors.white.withOpacity(0.1),
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(isTablet ? 40 : 24),
+            padding: EdgeInsets.all(cardPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: isTablet ? 14 : 10, vertical: isTablet ? 6 : 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.white10,
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         widget.isBangla ? "রমজান ২০২৬" : "Ramadan 2026",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: isTablet ? 14 : 12,
+                          fontSize: titleSize,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: isTablet ? 28 : 16),
+                SizedBox(height: cardPadding * 0.4),
                 Text(
                   _nextEvent,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
-                    fontSize: isTablet ? 22 : 16,
+                    fontSize: eventSize,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  _formatDuration(_timeLeft),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: isTablet ? 56 : 36,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.5,
+                const SizedBox(height: 2),
+                if (!_nextEvent.contains("Eid") && !_nextEvent.contains("ঈদ"))
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      _formatDuration(_timeLeft),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: timeSize,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                  )
+                else
+                  Text(
+                    widget.isBangla ? "ঈদ মোবারক!" : "Eid Mubarak!",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: timeSize * 0.65,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                SizedBox(height: isTablet ? 28 : 16),
+                SizedBox(height: cardPadding * 0.4),
                 InkWell(
                   onTap: _showLocationPicker,
                   child: Row(
@@ -877,12 +930,12 @@ class _HomePageState extends State<HomePage> {
                             : "${widget.selectedCity}, Bangladesh",
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.7),
-                          fontSize: isTablet ? 16 : 12,
+                          fontSize: footerSize,
                         ),
                       ),
                       Icon(Icons.edit_location_alt_rounded,
                           color: Colors.white.withOpacity(0.7),
-                          size: isTablet ? 20 : 14),
+                          size: footerSize + 2),
                     ],
                   ),
                 ),
@@ -911,12 +964,12 @@ class _HomePageState extends State<HomePage> {
         Text(
           widget.isBangla ? "আজকের সময়সূচী" : "Today's Schedule",
           style: TextStyle(
-            fontSize: (maxWidth * 0.045).clamp(18.0, 22.0),
+            fontSize: (maxWidth * 0.04).clamp(15.0, 20.0),
             fontWeight: FontWeight.bold,
             color: textColor,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 10),
         Row(
           children: [
             Expanded(
@@ -930,7 +983,7 @@ class _HomePageState extends State<HomePage> {
                 maxWidth,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
             Expanded(
               child: _buildTimeCard(
                 widget.isBangla ? "ইফতার শুরু" : "Iftar Begins",
@@ -949,31 +1002,36 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildTimeCard(String label, String time, IconData icon, Color color, Color surface, Color text, double maxWidth) {
-    final double padding = (maxWidth * 0.035).clamp(12.0, 20.0);
-    final double iconSize = (maxWidth * 0.06).clamp(24.0, 32.0);
-    final double labelSize = (maxWidth * 0.03).clamp(10.0, 14.0);
-    final double timeSize = (maxWidth * 0.05).clamp(18.0, 24.0);
+    final double padding = (maxWidth * 0.035).clamp(10.0, 18.0);
+    final double iconSize = (maxWidth * 0.06).clamp(22.0, 28.0);
+    final double labelSize = (maxWidth * 0.03).clamp(10.0, 13.0);
+    final double timeSize = (maxWidth * 0.05).clamp(16.0, 22.0);
 
     return Container(
       padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
         color: surface,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(widget.isDarkMode ? 0.2 : 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(widget.isDarkMode ? 0.1 : 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: Column(
         children: [
           Icon(icon, color: color, size: iconSize),
-          const SizedBox(height: 8),
-          Text(label, style: TextStyle(fontSize: labelSize, color: text.withOpacity(0.7))),
           const SizedBox(height: 4),
-          Text(time, style: TextStyle(fontSize: timeSize, fontWeight: FontWeight.bold, color: text)),
+          Text(label, 
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: labelSize, color: text.withOpacity(0.7))),
+          const SizedBox(height: 1),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(time, style: TextStyle(fontSize: timeSize, fontWeight: FontWeight.bold, color: text)),
+          ),
         ],
       ),
     );
@@ -984,18 +1042,17 @@ class _HomePageState extends State<HomePage> {
     final int dayIndex = (DateTime.now().day - 1) % _dailyVerses.length;
     final QuranVerse currentVerse = _dailyVerses[dayIndex];
     
-    // Dynamic values based on width
-    final double padding = (maxWidth * 0.05).clamp(16.0, 32.0);
-    final double titleSize = (maxWidth * 0.04).clamp(14.0, 20.0);
-    final double contentSize = (maxWidth * 0.045).clamp(15.0, 24.0);
-    final double iconSize = (maxWidth * 0.08).clamp(24.0, 48.0);
+    final double padding = (maxWidth * 0.045).clamp(14.0, 24.0);
+    final double titleSize = (maxWidth * 0.035).clamp(12.0, 16.0);
+    final double contentSize = (maxWidth * 0.04).clamp(13.0, 20.0);
+    final double iconSize = (maxWidth * 0.065).clamp(22.0, 32.0);
 
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
         color: surfaceColor,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: widget.isDarkMode
               ? Colors.white10
@@ -1003,9 +1060,9 @@ class _HomePageState extends State<HomePage> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(widget.isDarkMode ? 0.2 : 0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+            color: Colors.black.withOpacity(widget.isDarkMode ? 0.1 : 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -1015,7 +1072,7 @@ class _HomePageState extends State<HomePage> {
           Row(
             children: [
               Icon(Icons.format_quote_rounded, color: primaryGreen, size: iconSize),
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               Text(
                 widget.isBangla ? "আজকের অনুপ্রেরণা" : "Daily Inspiration",
                 style: TextStyle(
@@ -1026,7 +1083,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          SizedBox(height: padding * 0.6),
+          SizedBox(height: padding * 0.4),
           Text(
             widget.isBangla
                 ? "“${currentVerse.textBn}”"
@@ -1034,12 +1091,12 @@ class _HomePageState extends State<HomePage> {
             style: TextStyle(
               color: textColor,
               fontSize: contentSize,
-              height: 1.5,
+              height: 1.3,
               fontWeight: FontWeight.w500,
               fontStyle: FontStyle.italic,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Align(
             alignment: Alignment.centerRight,
             child: Text(
@@ -1048,7 +1105,7 @@ class _HomePageState extends State<HomePage> {
                   : currentVerse.referenceEn,
               style: TextStyle(
                 color: subtextColor,
-                fontSize: titleSize * 0.85,
+                fontSize: titleSize * 0.8,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -1068,12 +1125,12 @@ class _HomePageState extends State<HomePage> {
         Text(
           widget.isBangla ? "রমজানের দোয়া" : "Ramadan Dua",
           style: TextStyle(
-            fontSize: (maxWidth * 0.045).clamp(18.0, 22.0),
+            fontSize: (maxWidth * 0.04).clamp(15.0, 20.0),
             fontWeight: FontWeight.bold,
             color: textColor,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 10),
         if (isWide)
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1081,10 +1138,7 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 child: _buildDuaCard(
                     widget.isBangla ? "সেহরির দোয়া" : "Sehri Dua",
-                    "نَوَيْتُ اَنْ اَصُوْমَ رَمَضَانَ الْكَرِيْمِ مِنْ شَهْرِ رَمَضَانَ الْمُبَارَكِ فَرْضًا لَكَ يَا اَللهُ فَتَقَبَّلْ مِنِّى اِنَّكَ اَنْتَ السَّمِيْعُ الْعَلِيْمُ",
-                    widget.isBangla
-                        ? "নাওয়াইতু আন আছুমা গাদাম মিন শাহরি রামাদ্বানাল মুবারাকি ফারদাল্লাকা ইয়া আল্লাহু ফাতাক্বাব্বাল মিন্নি ইন্নাকা আনতাস সামিউল আলিম।"
-                        : "Nawaitu an asuma ghadam min shahri ramadanal mubaraki fardal-laka ya Allahu fataqabbal minni innaka antas-samiul 'alim.",
+                    "নাওয়াইতু আন আছুমা গাদাম মিন শাহরি রামাদ্বানাল মুবারাকি ফারদাল্লাকা ইয়া আল্লাহু ফাতাক্বাব্বাল মিন্নি ইন্নাকা আনতাস সামিউল আলিম।",
                     widget.isBangla
                         ? "হে আল্লাহ! আমি আগামীকাল পবিত্র রমজান মাসের রোজা রাখার নিয়ত করলাম, যা আপনার পক্ষ থেকে ফরজ। সুতরাং আমার পক্ষ থেকে তা কবুল করুন। নিশ্চয়ই আপনি সর্বশ্রোতা ও সর্বজ্ঞ।"
                         : "O Allah! I intend to keep the fast tomorrow for the month of Ramadan, which is obligatory from You. So accept it from me. Indeed, You are the All-Hearing, the All-Knowing.",
@@ -1094,14 +1148,11 @@ class _HomePageState extends State<HomePage> {
                     subtextColor,
                     maxWidth),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 10),
               Expanded(
                 child: _buildDuaCard(
                     widget.isBangla ? "ইফতারের দোয়া" : "Iftar Dua",
-                    "اللَّهُمَّ لَكَ صُمْتُ وَتَوَكَّلْتُ عَلَى رِزْقِكَ وَأَفْطَرْتُ بِরَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ",
-                    widget.isBangla
-                        ? "আল্লাহুম্মা লাকা ছুমতু ওয়া তা'ওয়াক্কালতু আ'লা রিজকিকা ওয়া আফতারতু বি রাহমাতিকা ইয়া আর হামার রা-হিমীন।"
-                        : "Allahumma laka sumtu wa tawakkaltu 'ala rizqika wa aftartu bi-rahmatika ya arhamar-rahimin.",
+                    "আল্লাহুম্মা লাকা ছুমতু ওয়া তা'ওয়াক্কালতু আ'লা রিজকিকা ওয়া আফতারতু বি রাহমাতিকা ইয়া আর হামার রা-হিমীন।",
                     widget.isBangla
                         ? "হে আল্লাহ! আমি আপনার সন্তুষ্টির জন্য রোজা রেখেছি এবং আপনার ওপর ভরসা করেছি, আপনার দেওয়া রিজিক দিয়েই ইফতার করছি। আপনার দয়ার উসিলায়, হে শ্রেষ্ঠ দয়ালু।"
                         : "O Allah! I fasted for You and I put my trust in Your provision and I break my fast with Your mercy, O Most Merciful of the merciful.",
@@ -1118,10 +1169,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               _buildDuaCard(
                   widget.isBangla ? "সেহরির দোয়া" : "Sehri Dua",
-                  "نَوَيْتُ اَنْ اَصُوْমَ রَمَضَانَ الْكَرِيْمِ مِنْ شَهْرِ رَمَضَانَ الْمُبَارَكِ فَرْضًا لَكَ يَا اَللهُ فَتَقَبَّلْ مِنِّى اِنَّكَ اَنْتَ السَّمِيْعُ الْعَلِيْمُ",
-                  widget.isBangla
-                      ? "নাওয়াইতু আন আছুমা গাদাম মিন শাহরি রামাদ্বানাল মুবারাকি ফারদাল্লাকা ইয়া আল্লাহু ফাতাক্বাব্বাল মিন্নি ইন্নাকা আনতাস সামিউল আলিম।"
-                      : "Nawaitu an asuma ghadam min shahri ramadanal mubaraki fardal-laka ya Allahu fataqabbal minni innaka antas-samiul 'alim.",
+                  "নাওয়াইতু আন আছুমা গাদাম মিন শাহরি রামাদ্বানাল মুবারাকি ফারদাল্লাকা ইয়া আল্লাহু ফাতাক্বাব্বাল মিন্নি ইন্নাকা আনতাস সামিউল আলিম।",
                   widget.isBangla
                       ? "হে আল্লাহ! আমি আগামীকাল পবিত্র রমজান মাসের রোজা রাখার নিয়ত করলাম, যা আপনার পক্ষ থেকে ফরজ। সুতরাং আমার পক্ষ থেকে তা কবুল করুন। নিশ্চয়ই আপনি সর্বশ্রোতা ও সর্বজ্ঞ।"
                       : "O Allah! I intend to keep the fast tomorrow for the month of Ramadan, which is obligatory from You. So accept it from me. Indeed, You are the All-Hearing, the All-Knowing.",
@@ -1130,13 +1178,10 @@ class _HomePageState extends State<HomePage> {
                   textColor,
                   subtextColor,
                   maxWidth),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               _buildDuaCard(
                   widget.isBangla ? "ইফতারের দোয়া" : "Iftar Dua",
-                  "اللَّهُمَّ لَكَ صُمْتُ وَتَوَكَّلْتُ عَلَى رِزْقِكَ وَأَفْطَرْتُ بِরَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ",
-                  widget.isBangla
-                      ? "আল্লাহুম্মা লাকা ছুমতু ওয়া তা'ওয়াক্কালতু আ'লা রিজকিকা ওয়া আফতারতু বি রাহমাতিকা ইয়া আর হামার রা-হিমীন।"
-                      : "Allahumma laka sumtu wa tawakkaltu 'ala rizqika wa aftartu bi-rahmatika ya arhamar-rahimin.",
+                  "আল্লাহুম্মা লাকা ছুমতু ওয়া তা'ওয়াক্কালতু আ'লা রিজকিকা ওয়া আফতারতু বি রাহমাতিকা ইয়া আর হামার রা-হিমীন।",
                   widget.isBangla
                       ? "হে আল্লাহ! আমি আপনার সন্তুষ্টির জন্য রোজা রেখেছি এবং আপনার ওপর ভরসা করেছি, আপনার দেওয়া রিজিক দিয়েই ইফতার করছি। আপনার দয়ার উসিলায়, হে শ্রেষ্ঠ দয়ালু।"
                       : "O Allah! I fasted for You and I put my trust in Your provision and I break my fast with Your mercy, O Most Merciful of the merciful.",
@@ -1151,35 +1196,34 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildDuaCard(String title, String arabic, String uccharon,
-      String meaning, Color primary, Color surface, Color text, Color subtext, double screenWidth) {
+  Widget _buildDuaCard(String title, String uccharon,
+      String meaning, Color primary, Color surface, Color text, Color subtext, double maxWidth) {
     return LayoutBuilder(builder: (context, constraints) {
       final double cardWidth = constraints.maxWidth;
-      final double padding = (cardWidth * 0.06).clamp(16.0, 24.0);
-      final double arabicSize = (cardWidth * 0.08).clamp(20.0, 32.0);
-      final double labelSize = (cardWidth * 0.05).clamp(12.0, 18.0);
+      final double padding = (cardWidth * 0.055).clamp(12.0, 22.0);
+      final double labelSize = (cardWidth * 0.045).clamp(12.0, 16.0);
 
       return Container(
         width: double.infinity,
         decoration: BoxDecoration(
           color: surface,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
               color: widget.isDarkMode
                   ? Colors.white10
                   : Colors.black.withOpacity(0.05)),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(widget.isDarkMode ? 0.2 : 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4)),
+                color: Colors.black.withOpacity(widget.isDarkMode ? 0.1 : 0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 3)),
           ],
         ),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            borderRadius: BorderRadius.circular(24),
-            onTap: () => _showDuaOrthoDetail(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () => _showFullDuaDetail(
                 context, title, meaning, primary, surface, text),
             child: Padding(
               padding: EdgeInsets.all(padding),
@@ -1193,14 +1237,14 @@ class _HomePageState extends State<HomePage> {
                         child: Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(5),
                               decoration: BoxDecoration(
                                   color: primary.withOpacity(0.1),
                                   shape: BoxShape.circle),
                               child: Icon(Icons.star_rounded,
-                                  color: primary, size: (cardWidth * 0.06).clamp(16.0, 24.0)),
+                                  color: primary, size: (cardWidth * 0.055).clamp(14.0, 20.0)),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 8),
                             Flexible(
                               child: Text(title,
                                   style: TextStyle(
@@ -1211,48 +1255,34 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.info_outline_rounded,
-                                size: 12, color: primary),
-                            const SizedBox(width: 4),
-                            Text(
-                              widget.isBangla ? "অর্থ দেখুন" : "Meaning",
-                              style: TextStyle(
-                                  fontSize: (cardWidth * 0.035).clamp(10.0, 12.0),
-                                  fontWeight: FontWeight.bold,
-                                  color: primary),
-                            ),
-                          ],
-                        ),
-                      ),
+                      Icon(Icons.open_in_full_rounded, color: primary.withOpacity(0.5), size: 14),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: Text(arabic,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: arabicSize,
-                            fontWeight: FontWeight.bold,
-                            color: text,
-                            fontFamily: 'serif',
-                            height: 1.5)),
+                  const SizedBox(height: 8),
+                  Text(
+                    uccharon,
+                    style: TextStyle(
+                      color: text.withOpacity(0.85),
+                      fontSize: labelSize * 0.85,
+                      height: 1.3,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  _buildDuaDetailSection(
-                      widget.isBangla ? "উচ্চারণ:" : "Pronunciation:",
-                      uccharon,
-                      primary,
-                      text,
-                      labelSize * 0.8),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.isBangla ? "পুরো দোয়া ও অর্থ" : "Full Dua & Meaning",
+                        style: TextStyle(
+                          color: primary,
+                          fontSize: labelSize * 0.7,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Icon(Icons.arrow_forward_ios_rounded, size: 9, color: primary),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -1262,62 +1292,72 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _showDuaOrthoDetail(BuildContext context, String title, String meaning,
+  void _showFullDuaDetail(BuildContext context, String title, String meaning,
       Color primary, Color surface, Color text) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text(title,
-            style: TextStyle(
-                color: text, fontWeight: FontWeight.bold, fontSize: 18)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        insetPadding: const EdgeInsets.all(20),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        titlePadding: const EdgeInsets.fromLTRB(16, 14, 6, 6),
+        title: Row(
           children: [
-            Text(
-              widget.isBangla ? "অর্থ:" : "Meaning:",
-              style: TextStyle(
-                  color: primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  letterSpacing: 0.5),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              meaning,
-              style: TextStyle(
-                  color: text,
-                  fontSize: 16,
-                  height: 1.5,
-                  fontWeight: FontWeight.w500),
+            Icon(Icons.info_outline_rounded, color: primary, size: 20),
+            const SizedBox(width: 8),
+            Expanded(child: Text(title, style: TextStyle(color: text, fontWeight: FontWeight.bold, fontSize: 17))),
+            IconButton(
+              icon: const Icon(Icons.close, size: 18),
+              onPressed: () => Navigator.pop(context),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(widget.isBangla ? "ঠিক আছে" : "Close",
-                style: TextStyle(color: primary, fontWeight: FontWeight.bold)),
+        content: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDetailSection(widget.isBangla ? "অর্থ" : "Meaning", meaning, primary, text),
+              ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildDuaDetailSection(
-      String label, String content, Color primary, Color text, double labelSize) {
+  Widget _buildDetailSection(String label, String content, Color primary, Color text) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(
+            color: primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: Text(
+            label,
             style: TextStyle(
-                color: primary, fontWeight: FontWeight.bold, fontSize: labelSize)),
-        const SizedBox(height: 4),
-        Text(content,
-            style: TextStyle(
-                color: text.withOpacity(0.8), fontSize: labelSize * 1.1, height: 1.4)),
+              color: primary,
+              fontWeight: FontWeight.bold,
+              fontSize: 10,
+              letterSpacing: 0.7,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          content,
+          style: TextStyle(
+            color: text.withOpacity(0.9),
+            fontSize: 14,
+            height: 1.4,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }
@@ -1329,17 +1369,21 @@ class _HomePageState extends State<HomePage> {
     Color surfaceColor,
     Color textColor,
     VoidCallback onTap,
-    bool isTablet,
+    double maxWidth,
   ) {
+    final double padding = (maxWidth * 0.025).clamp(6.0, 12.0);
+    final double iconSize = (maxWidth * 0.06).clamp(22.0, 28.0);
+    final double labelSize = (maxWidth * 0.03).clamp(10.0, 13.0);
+
     return Container(
       decoration: BoxDecoration(
         color: surfaceColor,
-        borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(widget.isDarkMode ? 0.2 : 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(widget.isDarkMode ? 0.1 : 0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -1347,35 +1391,35 @@ class _HomePageState extends State<HomePage> {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
+          borderRadius: BorderRadius.circular(14),
           child: Padding(
-            padding: EdgeInsets.all(isTablet ? 12 : 8),
+            padding: EdgeInsets.all(padding),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Flexible(
                   child: Container(
-                    padding: EdgeInsets.all(isTablet ? 12 : 8),
+                    padding: EdgeInsets.all(padding * 0.6),
                     decoration: BoxDecoration(
                       color: accentColor.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
                     child: FittedBox(
-                      child: Icon(icon, color: accentColor, size: isTablet ? 32 : 26),
+                      child: Icon(icon, color: accentColor, size: iconSize),
                     ),
                   ),
                 ),
-                SizedBox(height: isTablet ? 12 : 8),
+                SizedBox(height: padding * 0.4),
                 Text(
                   title,
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: isTablet ? 14 : 11,
+                    fontSize: labelSize,
                     fontWeight: FontWeight.bold,
                     color: textColor,
-                    height: 1.2,
+                    height: 1.15,
                   ),
                 ),
               ],

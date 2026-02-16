@@ -99,10 +99,10 @@ class AllahNamesPage extends StatelessWidget {
     AllahName(nameEn: "Al-Muqtadir", nameBn: "আল-মুকতাদির", arabic: "المقتدر", meaningEn: "The Powerful", meaningBn: "পরাক্রমশালী"),
     AllahName(nameEn: "Al-Muqaddim", nameBn: "আল-মুকাদ্দিম", arabic: "المقدم", meaningEn: "The Expediter", meaningBn: "অগ্রগামী"),
     AllahName(nameEn: "Al-Mu'akhkhir", nameBn: "আল-মু'আখখির", arabic: "المؤخر", meaningEn: "The Delayer", meaningBn: "বিলম্বকারী"),
-    AllahName(nameEn: "Al-Awwal", nameBn: "আল-আওয়াল", arabic: "الأول", meaningEn: "The First", meaningBn: "প্রথম"),
-    AllahName(nameEn: "Al-Akhir", nameBn: "আল-আখির", arabic: "الآخر", meaningEn: "The Last", meaningBn: "শেষ"),
+    AllahName(nameEn: "Al-Awwal", nameBn: "আল-الأول", arabic: "الأول", meaningEn: "The First", meaningBn: "প্রথম"),
+    AllahName(nameEn: "Al-Akhir", nameBn: "Al-Akhir", arabic: "الآخر", meaningEn: "The Last", meaningBn: "শেষ"),
     AllahName(nameEn: "Az-Zahir", nameBn: "আয-যাহির", arabic: "الظاهر", meaningEn: "The Apparent", meaningBn: "প্রকাশ্য"),
-    AllahName(nameEn: "Al-Batin", nameBn: "আল-বাতিন", arabic: "الباطন", meaningEn: "The Hidden", meaningBn: "গুপ্ত"),
+    AllahName(nameEn: "Al-Batin", nameBn: "আল-বাতিন", arabic: "الباطن", meaningEn: "The Hidden", meaningBn: "গুপ্ত"),
     AllahName(nameEn: "Al-Wali", nameBn: "আল-ওয়ালী", arabic: "الوالي", meaningEn: "The Governor", meaningBn: "শাসক"),
     AllahName(nameEn: "Al-Muta'ali", nameBn: "আল-মুতাআলী", arabic: "المتعالي", meaningEn: "The Most Exalted", meaningBn: "সর্বোচ্চ"),
     AllahName(nameEn: "Al-Barr", nameBn: "আল-বার্র", arabic: "البر", meaningEn: "The Source of Goodness", meaningBn: "কল্যাণের উৎস"),
@@ -118,11 +118,11 @@ class AllahNamesPage extends StatelessWidget {
     AllahName(nameEn: "Al-Mughni", nameBn: "আল-মুগনী", arabic: "المغني", meaningEn: "The Enricher", meaningBn: "সমৃদ্ধকারী"),
     AllahName(nameEn: "Al-Mani", nameBn: "আল-মানি'", arabic: "المانع", meaningEn: "The Withholder", meaningBn: "নিবারক"),
     AllahName(nameEn: "Ad-Darr", nameBn: "আদ-দার্র", arabic: "الضار", meaningEn: "The Harmful", meaningBn: "ক্ষতিসাধক"),
-    AllahName(nameEn: "An-Nafi", nameBn: "আন-নাফি'", arabic: "النافع", meaningEn: "The Beneficent", meaningBn: "কল্যাণকারী"),
-    AllahName(nameEn: "An-Nur", nameBn: "আন-নুর", arabic: "النور", meaningEn: "The Light", meaningBn: "আলো"),
+    AllahName(nameEn: "An-Nafi", nameBn: "An-Nafi'", arabic: "النافع", meaningEn: "The Beneficent", meaningBn: "কল্যাণকারী"),
+    AllahName(nameEn: "An-Nur", nameBn: "An-Nur", arabic: "النور", meaningEn: "The Light", meaningBn: "আলো"),
     AllahName(nameEn: "Al-Hadi", nameBn: "আল-হাদী", arabic: "الهادي", meaningEn: "The Guide", meaningBn: "পথপ্রদর্শক"),
     AllahName(nameEn: "Al-Badi", nameBn: "আল-বাদি'", arabic: "البديع", meaningEn: "The Incomparable", meaningBn: "অতুলনীয়"),
-    AllahName(nameEn: "Al-Baqi", nameBn: "আল-বাকী", arabic: "الباقي", meaningEn: "The Everlasting", meaningBn: "চিরস্থায়ী"),
+    AllahName(nameEn: "Al-Baqi", nameBn: "আল-বাকী", arabic: "الباقی", meaningEn: "The Everlasting", meaningBn: "চিরস্থায়ী"),
     AllahName(nameEn: "Al-Warith", nameBn: "আল-ওয়ারিস", arabic: "الوارث", meaningEn: "The Inheritor", meaningBn: "উত্তরাধিকারী"),
     AllahName(nameEn: "Ar-Rashid", nameBn: "আর-রশীদ", arabic: "الرشيد", meaningEn: "The Rightly Guided", meaningBn: "সঠিক পথপ্রদর্শক"),
     AllahName(nameEn: "As-Sabur", nameBn: "আস-সাবুর", arabic: "الصبور", meaningEn: "The Patient", meaningBn: "ধৈর্যশীল"),
@@ -133,21 +133,23 @@ class AllahNamesPage extends StatelessWidget {
     final primaryGreen = Colors.green.shade600;
     final surfaceColor = isDarkMode ? const Color(0xFF1E293B) : Colors.white;
     final textColor = isDarkMode ? Colors.white : Colors.black87;
-    final subtextColor = isDarkMode ? Colors.white70 : Colors.black54;
     final scaffoldBg = isDarkMode ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
 
     return Scaffold(
       backgroundColor: scaffoldBg,
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final crossAxisCount = constraints.maxWidth > 900 ? 3 : (constraints.maxWidth > 600 ? 2 : 1);
+          final double maxWidth = constraints.maxWidth;
+          final crossAxisCount = maxWidth > 900 ? 3 : (maxWidth > 600 ? 2 : 1);
+          final double padding = (maxWidth * 0.04).clamp(12.0, 20.0);
+
           return GridView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(padding),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              mainAxisExtent: 110,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              mainAxisExtent: (maxWidth * 0.25).clamp(85.0, 100.0),
             ),
             itemCount: _names.length,
             itemBuilder: (context, index) {
@@ -155,27 +157,27 @@ class AllahNamesPage extends StatelessWidget {
               return Container(
                 decoration: BoxDecoration(
                   color: surfaceColor,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(isDarkMode ? 0.2 : 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+                      color: Colors.black.withOpacity(isDarkMode ? 0.15 : 0.03),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(20),
-                    onTap: () => _showNameDetail(context, n, index + 1, primaryGreen, surfaceColor, textColor, subtextColor),
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () => _showNameDetail(context, n, index + 1, primaryGreen, surfaceColor, textColor, maxWidth),
                     child: Padding(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       child: Row(
                         children: [
                           Container(
-                            width: 40,
-                            height: 40,
+                            width: (maxWidth * 0.08).clamp(32.0, 40.0),
+                            height: (maxWidth * 0.08).clamp(32.0, 40.0),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               color: primaryGreen.withOpacity(0.1),
@@ -186,11 +188,11 @@ class AllahNamesPage extends StatelessWidget {
                               style: TextStyle(
                                 color: primaryGreen,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                                fontSize: (maxWidth * 0.035).clamp(11.0, 13.0),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 14),
                           Expanded(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -200,24 +202,24 @@ class AllahNamesPage extends StatelessWidget {
                                   n.arabic,
                                   style: TextStyle(
                                     color: primaryGreen,
-                                    fontSize: 22,
+                                    fontSize: (maxWidth * 0.05).clamp(18.0, 22.0),
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'serif',
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 2),
                                 Text(
                                   isBangla ? n.nameBn : n.nameEn,
                                   style: TextStyle(
                                     color: textColor,
-                                    fontSize: 15,
+                                    fontSize: (maxWidth * 0.038).clamp(13.0, 15.0),
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          Icon(Icons.arrow_forward_ios_rounded, size: 14, color: subtextColor.withOpacity(0.5)),
+                          Icon(Icons.arrow_forward_ios_rounded, size: 12, color: textColor.withOpacity(0.3)),
                         ],
                       ),
                     ),
@@ -231,7 +233,7 @@ class AllahNamesPage extends StatelessWidget {
     );
   }
 
-  void _showNameDetail(BuildContext context, AllahName n, int index, Color primary, Color surface, Color text, Color subtext) {
+  void _showNameDetail(BuildContext context, AllahName n, int index, Color primary, Color surface, Color text, double maxWidth) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -242,7 +244,7 @@ class AllahNamesPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: primary.withOpacity(0.1),
                 shape: BoxShape.circle,
@@ -251,17 +253,17 @@ class AllahNamesPage extends StatelessWidget {
                 n.arabic,
                 style: TextStyle(
                   color: primary,
-                  fontSize: 48,
+                  fontSize: 40,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Text(
               isBangla ? n.nameBn : n.nameEn,
               style: TextStyle(
                 color: text,
-                fontSize: 24,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -270,19 +272,19 @@ class AllahNamesPage extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               isBangla ? "অর্থ:" : "Meaning:",
-              style: TextStyle(color: primary, fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(color: primary, fontWeight: FontWeight.bold, fontSize: 15),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               isBangla ? n.meaningBn : n.meaningEn,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: text,
-                fontSize: 18,
-                height: 1.5,
+                fontSize: 16,
+                height: 1.4,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -290,8 +292,8 @@ class AllahNamesPage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primary,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 child: Text(isBangla ? "ঠিক আছে" : "Close"),
               ),

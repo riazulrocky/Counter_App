@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutDeveloperPage extends StatelessWidget {
   final bool isDarkMode;
 
   const AboutDeveloperPage({super.key, required this.isDarkMode});
+
+  Future<void> _launchLinkedIn() async {
+    final Uri url = Uri.parse('https://www.linkedin.com/in/riazulrocky2/');
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +52,7 @@ class AboutDeveloperPage extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 24),
               // Name
               Text(
                 "Riazul Hasan Rocky",
@@ -54,7 +62,7 @@ class AboutDeveloperPage extends StatelessWidget {
                   color: isDarkMode ? Colors.white : Colors.black87,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 4),
               // Profession/Status
               Text(
                 "Software Engineer",
@@ -64,7 +72,37 @@ class AboutDeveloperPage extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 12),
+              // LinkedIn Button
+              ElevatedButton.icon(
+                onPressed: _launchLinkedIn,
+                icon: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Text(
+                    "in",
+                    style: TextStyle(
+                      color: Color(0xFF0077B5),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      fontFamily: 'Arial',
+                    ),
+                  ),
+                ),
+                label: const Text("LinkedIn Profile"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0077B5),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
               const Divider(),
               const SizedBox(height: 24),
               // Education Section Label
@@ -100,7 +138,7 @@ class AboutDeveloperPage extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               Text(
-                "Thank you for using Digital Tasbih!",
+                "Thank you for using Noorify!",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: isDarkMode ? Colors.white54 : Colors.grey,

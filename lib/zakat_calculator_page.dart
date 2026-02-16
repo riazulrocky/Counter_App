@@ -78,7 +78,7 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final double maxWidth = constraints.maxWidth;
-          final double horizontalPadding = maxWidth > 600 ? maxWidth * 0.15 : 20.0;
+          final double horizontalPadding = (maxWidth * 0.05).clamp(16.0, 100.0);
 
           return GestureDetector(
             onTap: () => FocusScope.of(context).unfocus(),
@@ -87,69 +87,68 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage> {
               padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 16),
               child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 600),
+                  constraints: const BoxConstraints(maxWidth: 800),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildSectionTitle(widget.isBangla ? "আর্থিক সম্পদ" : "Financial Assets", Icons.account_balance_wallet_rounded, primaryGreen),
+                      _buildSectionTitle(widget.isBangla ? "আর্থিক সম্পদ" : "Financial Assets", Icons.account_balance_wallet_rounded, primaryGreen, maxWidth),
                       _buildCard([
-                        _buildField(_cashController, widget.isBangla ? "নগদ টাকা (হাতে/ব্যাংকে)" : "Cash in hand / Bank", Icons.payments_rounded, primaryGreen),
-                        _buildField(_goldController, widget.isBangla ? "স্বর্ণের বাজারমূল্য" : "Gold Market Value", Icons.brightness_high_rounded, primaryGreen),
-                        _buildField(_silverController, widget.isBangla ? "রুপার বাজারমূল্য" : "Silver Market Value", Icons.brightness_medium_rounded, primaryGreen),
-                        _buildField(_investmentController, widget.isBangla ? "অন্যান্য বিনিয়োগ" : "Investments & Others", Icons.trending_up_rounded, primaryGreen),
-                      ], surfaceColor),
+                        _buildField(_cashController, widget.isBangla ? "নগদ টাকা (হাতে/ব্যাংকে)" : "Cash in hand / Bank", Icons.payments_rounded, primaryGreen, maxWidth),
+                        _buildField(_goldController, widget.isBangla ? "স্বর্ণের বাজারমূল্য" : "Gold Market Value", Icons.brightness_high_rounded, primaryGreen, maxWidth),
+                        _buildField(_silverController, widget.isBangla ? "রুপার বাজারমূল্য" : "Silver Market Value", Icons.brightness_medium_rounded, primaryGreen, maxWidth),
+                        _buildField(_investmentController, widget.isBangla ? "অন্যান্য বিনিয়োগ" : "Investments & Others", Icons.trending_up_rounded, primaryGreen, maxWidth),
+                      ], surfaceColor, maxWidth),
                       const SizedBox(height: 24),
-                      _buildSectionTitle(widget.isBangla ? "ঋণ ও দায়" : "Liabilities & Debts", Icons.remove_circle_outline_rounded, Colors.redAccent),
+                      _buildSectionTitle(widget.isBangla ? "ঋণ ও দায়" : "Liabilities & Debts", Icons.remove_circle_outline_rounded, Colors.redAccent, maxWidth),
                       _buildCard([
-                        _buildField(_debtController, widget.isBangla ? "মোট ঋণের পরিমাণ" : "Total Outstanding Debts", Icons.money_off_rounded, Colors.redAccent),
-                      ], surfaceColor),
+                        _buildField(_debtController, widget.isBangla ? "মোট ঋণের পরিমাণ" : "Total Outstanding Debts", Icons.money_off_rounded, Colors.redAccent, maxWidth),
+                      ], surfaceColor, maxWidth),
                       const SizedBox(height: 32),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              height: 56,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                gradient: LinearGradient(colors: [primaryGreen, Colors.green.shade800]),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: primaryGreen.withOpacity(0.3),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, 6),
-                                  )
-                                ],
+                          Container(
+                            height: (maxWidth * 0.1).clamp(40.0, 50.0),
+                            width: (maxWidth * 0.35).clamp(120.0, 160.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              gradient: LinearGradient(colors: [primaryGreen, Colors.green.shade800]),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: primaryGreen.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                )
+                              ],
+                            ),
+                            child: ElevatedButton(
+                              onPressed: _calculateZakat,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                padding: EdgeInsets.zero,
                               ),
-                              child: ElevatedButton(
-                                onPressed: _calculateZakat,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
-                                  shadowColor: Colors.transparent,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                ),
-                                child: Text(
-                                  widget.isBangla ? "হিসাব করুন" : "Calculate",
-                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                                ),
+                              child: Text(
+                                widget.isBangla ? "হিসাব করুন" : "Calculate",
+                                style: TextStyle(fontSize: (maxWidth * 0.035).clamp(13.0, 15.0), fontWeight: FontWeight.bold, color: Colors.white),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            flex: 1,
-                            child: SizedBox(
-                              height: 56,
-                              child: OutlinedButton(
-                                onPressed: _resetFields,
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: widget.isDarkMode ? Colors.white24 : Colors.grey.shade300),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                ),
-                                child: Text(
-                                  widget.isBangla ? "রিসেট" : "Reset",
-                                  style: TextStyle(color: textColor.withOpacity(0.7)),
-                                ),
+                          const SizedBox(width: 16),
+                          SizedBox(
+                            height: (maxWidth * 0.1).clamp(40.0, 50.0),
+                            width: (maxWidth * 0.25).clamp(80.0, 110.0),
+                            child: OutlinedButton(
+                              onPressed: _resetFields,
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(color: widget.isDarkMode ? Colors.white24 : Colors.grey.shade300, width: 1.5),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                padding: EdgeInsets.zero,
+                              ),
+                              child: Text(
+                                widget.isBangla ? "রিসেট" : "Reset",
+                                style: TextStyle(fontSize: (maxWidth * 0.035).clamp(13.0, 15.0), fontWeight: FontWeight.w600, color: textColor.withOpacity(0.7)),
                               ),
                             ),
                           ),
@@ -157,7 +156,7 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage> {
                       ),
                       const SizedBox(height: 32),
                       if (_showResult) 
-                        _buildResultCard(primaryGreen),
+                        _buildResultCard(primaryGreen, maxWidth),
                       const SizedBox(height: 40),
                     ],
                   ),
@@ -170,17 +169,17 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage> {
     );
   }
 
-  Widget _buildSectionTitle(String title, IconData icon, Color color) {
+  Widget _buildSectionTitle(String title, IconData icon, Color color, double maxWidth) {
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 12),
       child: Row(
         children: [
-          Icon(icon, size: 18, color: color),
+          Icon(icon, size: (maxWidth * 0.045).clamp(16.0, 20.0), color: color),
           const SizedBox(width: 8),
           Text(
             title,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: (maxWidth * 0.04).clamp(14.0, 18.0),
               fontWeight: FontWeight.bold,
               color: color,
               letterSpacing: 0.5,
@@ -191,7 +190,7 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage> {
     );
   }
 
-  Widget _buildCard(List<Widget> children, Color bgColor) {
+  Widget _buildCard(List<Widget> children, Color bgColor, double maxWidth) {
     return Container(
       decoration: BoxDecoration(
         color: bgColor,
@@ -205,13 +204,14 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage> {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all((maxWidth * 0.05).clamp(16.0, 24.0)),
         child: Column(children: children),
       ),
     );
   }
 
-  Widget _buildField(TextEditingController controller, String label, IconData icon, Color accentColor) {
+  Widget _buildField(TextEditingController controller, String label, IconData icon, Color accentColor, double maxWidth) {
+    final double fontSize = (maxWidth * 0.038).clamp(13.0, 16.0);
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextField(
@@ -219,14 +219,14 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage> {
         keyboardType: TextInputType.number,
         style: TextStyle(
           color: widget.isDarkMode ? Colors.white : Colors.black87,
-          fontSize: 15,
+          fontSize: fontSize,
         ),
         decoration: InputDecoration(
-          prefixIcon: Icon(icon, color: accentColor.withOpacity(0.7), size: 20),
+          prefixIcon: Icon(icon, color: accentColor.withOpacity(0.7), size: (maxWidth * 0.05).clamp(18.0, 22.0)),
           labelText: label,
           labelStyle: TextStyle(
             color: widget.isDarkMode ? Colors.white60 : Colors.black45,
-            fontSize: 14,
+            fontSize: fontSize * 0.9,
           ),
           hintText: "0.00",
           hintStyle: TextStyle(color: widget.isDarkMode ? Colors.white10 : Colors.black12),
@@ -250,7 +250,8 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage> {
     );
   }
 
-  Widget _buildResultCard(Color primaryGreen) {
+  Widget _buildResultCard(Color primaryGreen, double maxWidth) {
+    final double padding = (maxWidth * 0.07).clamp(20.0, 32.0);
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -277,40 +278,42 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage> {
             bottom: -20,
             child: Icon(
               _isEligible ? Icons.check_circle_outline : Icons.info_outline,
-              size: 120,
-              color: Colors.white.withOpacity(0.1),
+              size: (maxWidth * 0.3).clamp(100.0, 150.0),
+              color: Colors.white10,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(28),
+            padding: EdgeInsets.all(padding),
             child: Column(
               children: [
                 if (_isEligible) ...[
                   Text(
                     widget.isBangla ? "আপনার প্রদেয় যাকাত" : "Total Payable Zakat",
-                    style: const TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w500),
+                    style: TextStyle(color: Colors.white70, fontSize: (maxWidth * 0.04).clamp(14.0, 18.0), fontWeight: FontWeight.w500),
                   ),
                   const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Text(
-                        _toBn(_zakatAmount.toStringAsFixed(2)),
-                        style: const TextStyle(color: Colors.white, fontSize: 42, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(width: 8),
-                      const Text("৳", style: TextStyle(color: Colors.white70, fontSize: 24, fontWeight: FontWeight.bold)),
-                    ],
+                  FittedBox(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          _toBn(_zakatAmount.toStringAsFixed(2)),
+                          style: TextStyle(color: Colors.white, fontSize: (maxWidth * 0.1).clamp(32.0, 48.0), fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(width: 8),
+                        Text("৳", style: TextStyle(color: Colors.white70, fontSize: (maxWidth * 0.06).clamp(20.0, 28.0), fontWeight: FontWeight.bold)),
+                      ],
+                    ),
                   ),
                 ] else ...[
-                  const Icon(Icons.info_outline_rounded, color: Colors.white, size: 48),
+                  Icon(Icons.info_outline_rounded, color: Colors.white, size: (maxWidth * 0.12).clamp(40.0, 56.0)),
                   const SizedBox(height: 16),
                   Text(
                     widget.isBangla ? "আপনি যাকাত প্রদানের জন্য উপযুক্ত নন" : "Not Eligible for Zakat",
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.white, fontSize: (maxWidth * 0.045).clamp(16.0, 20.0), fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -318,7 +321,7 @@ class _ZakatCalculatorPageState extends State<ZakatCalculatorPage> {
                       ? "আপনার মোট সম্পদ নিসাব (৳${_nisabThreshold.toInt()}) পরিমাণ নয়" 
                       : "Your wealth is below the Nisab (৳${_nisabThreshold.toInt()}) threshold.",
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
+                    style: TextStyle(color: Colors.white70, fontSize: (maxWidth * 0.035).clamp(12.0, 14.0), height: 1.4),
                   ),
                 ],
               ],

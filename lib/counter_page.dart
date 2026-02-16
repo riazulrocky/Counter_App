@@ -484,7 +484,7 @@ class _CounterPageState extends State<CounterPage> {
                   title,
                   style: TextStyle(
                     color: titleColor,
-                    fontSize: screenWidth < 360 ? 16 : 18,
+                    fontSize: (screenWidth * 0.05).clamp(16.0, 20.0),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -497,7 +497,7 @@ class _CounterPageState extends State<CounterPage> {
                   title,
                   style: TextStyle(
                     color: titleColor,
-                    fontSize: screenWidth < 360 ? 16 : 18,
+                    fontSize: (screenWidth * 0.05).clamp(16.0, 20.0),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -522,7 +522,7 @@ class _CounterPageState extends State<CounterPage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
-        final double horizontalPadding = maxWidth > 600 ? maxWidth * 0.15 : 24.0;
+        final double horizontalPadding = (maxWidth * 0.06).clamp(16.0, 100.0);
 
         return SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -533,11 +533,11 @@ class _CounterPageState extends State<CounterPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 2),
                   InkWell(
                     onTap: _showDhikrPicker,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
                         color: widget.isDarkMode
                             ? const Color(0xFF1E293B)
@@ -552,35 +552,35 @@ class _CounterPageState extends State<CounterPage> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.auto_awesome, color: primaryGreen),
+                          Icon(Icons.auto_awesome, color: primaryGreen, size: (maxWidth * 0.055).clamp(18.0, 22.0)),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(_isBangla ? "যিকির" : "Dhikr",
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.grey)),
+                                    style: TextStyle(
+                                        fontSize: (maxWidth * 0.028).clamp(9.0, 11.0), color: Colors.grey)),
                                 Text(
                                     _isBangla
                                         ? _currentDhikr.nameBn
                                         : _currentDhikr.nameEn,
-                                    style: const TextStyle(
-                                        fontSize: 16, fontWeight: FontWeight.bold)),
+                                    style: TextStyle(
+                                        fontSize: (maxWidth * 0.042).clamp(13.0, 16.0), fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ),
-                          Icon(Icons.keyboard_arrow_down, color: primaryGreen),
+                          Icon(Icons.keyboard_arrow_down, color: primaryGreen, size: 20),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   if (!_currentDhikr.isGeneral)
                     InkWell(
                       onTap: _showTargetCountPicker,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         decoration: BoxDecoration(
                           color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
                           borderRadius: BorderRadius.circular(16),
@@ -598,20 +598,20 @@ class _CounterPageState extends State<CounterPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(_isBangla ? "লক্ষ্য সংখ্যা" : "Target Count",
-                                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                                    style: TextStyle(fontSize: (maxWidth * 0.028).clamp(9.0, 11.0), color: Colors.grey)),
                                 Text(_formatNumber(_targetCount.toString()),
-                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                    style: TextStyle(fontSize: (maxWidth * 0.042).clamp(13.0, 16.0), fontWeight: FontWeight.bold)),
                               ],
                             ),
-                            Icon(Icons.edit_note_rounded, color: primaryGreen),
+                            Icon(Icons.edit_note_rounded, color: primaryGreen, size: (maxWidth * 0.06).clamp(22.0, 26.0)),
                           ],
                         ),
                       ),
                     ),
+                  const SizedBox(height: 12),
+                  _buildCounterCard(primaryGreen, animationDuration, maxWidth),
                   const SizedBox(height: 20),
-                  _buildCounterCard(primaryGreen, animationDuration),
-                  const SizedBox(height: 30),
-                  _buildModernActionButtons(primaryGreen),
+                  _buildModernActionButtons(primaryGreen, maxWidth),
                 ],
               ),
             ),
@@ -621,11 +621,11 @@ class _CounterPageState extends State<CounterPage> {
     );
   }
 
-  Widget _buildCounterCard(Color primaryGreen, Duration duration) {
+  Widget _buildCounterCard(Color primaryGreen, Duration duration, double maxWidth) {
     return AnimatedContainer(
       duration: duration,
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+      padding: EdgeInsets.symmetric(vertical: (maxWidth * 0.06).clamp(16.0, 32.0), horizontal: 16),
       decoration: BoxDecoration(
         color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -646,7 +646,7 @@ class _CounterPageState extends State<CounterPage> {
                 _isBangla ? _currentDhikr.uccharonBn : _currentDhikr.uccharonEn,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: (maxWidth * 0.055).clamp(16.0, 22.0),
                   fontWeight: FontWeight.bold,
                   color: widget.isDarkMode ? Colors.white : Colors.black87,
                 ),
@@ -659,19 +659,19 @@ class _CounterPageState extends State<CounterPage> {
                 _isBangla ? _currentDhikr.orthoBn : _currentDhikr.orthoEn,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: (maxWidth * 0.035).clamp(11.0, 14.0),
                   color: widget.isDarkMode ? Colors.white60 : Colors.black54,
                   fontStyle: FontStyle.italic,
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Text(
               "${_formatNumber(_counter.toString())} / ${_formatNumber(_targetCount.toString())}",
               style: TextStyle(
                   color: primaryGreen,
                   fontWeight: FontWeight.bold,
-                  fontSize: 18),
+                  fontSize: (maxWidth * 0.045).clamp(14.0, 18.0)),
             ),
           ] else
             Text(
@@ -679,24 +679,24 @@ class _CounterPageState extends State<CounterPage> {
               style: TextStyle(
                   color: primaryGreen,
                   fontWeight: FontWeight.bold,
-                  fontSize: 18),
+                  fontSize: (maxWidth * 0.045).clamp(14.0, 18.0)),
             ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
               _formatNumber(_counter.toString()),
               style: TextStyle(
-                fontSize: 100,
+                fontSize: (maxWidth * 0.22).clamp(70.0, 100.0),
                 fontWeight: FontWeight.bold,
                 color: widget.isDarkMode ? Colors.white : Colors.black,
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Container(
-            height: 6,
-            width: 80,
+            height: 5,
+            width: (maxWidth * 0.18).clamp(50.0, 80.0),
             decoration: BoxDecoration(
                 color: primaryGreen, borderRadius: BorderRadius.circular(10)),
           ),
@@ -705,7 +705,10 @@ class _CounterPageState extends State<CounterPage> {
     );
   }
 
-  Widget _buildModernActionButtons(Color primaryGreen) {
+  Widget _buildModernActionButtons(Color primaryGreen, double maxWidth) {
+    final double smallBtnSize = (maxWidth * 0.14).clamp(44.0, 54.0);
+    final double largeBtnSize = (maxWidth * 0.2).clamp(64.0, 76.0);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -714,26 +717,26 @@ class _CounterPageState extends State<CounterPage> {
             icon: Icons.remove,
             colors: [Colors.red.shade400, Colors.red.shade700],
             onPressed: _decrementCounter,
-            size: 52,
+            size: smallBtnSize,
           ),
         ),
-        const SizedBox(width: 24),
+        const SizedBox(width: 20),
         Flexible(
           child: _modernActionButton(
             icon: Icons.add,
             colors: [primaryGreen, Colors.green.shade800],
             onPressed: _incrementCounter,
-            size: 76,
+            size: largeBtnSize,
             isLarge: true,
           ),
         ),
-        const SizedBox(width: 24),
+        const SizedBox(width: 20),
         Flexible(
           child: _modernActionButton(
             icon: Icons.refresh,
             colors: [Colors.orange.shade700, Colors.orange.shade900],
             onPressed: _resetCounter,
-            size: 52,
+            size: smallBtnSize,
           ),
         ),
       ],
@@ -770,7 +773,7 @@ class _CounterPageState extends State<CounterPage> {
             child: Icon(
               icon,
               color: Colors.white,
-              size: isLarge ? 34 : 24,
+              size: size * 0.45,
             ),
           ),
         ),
