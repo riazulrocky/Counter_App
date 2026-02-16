@@ -780,7 +780,7 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 16),
         _buildDuaCard(
           widget.isBangla ? "সেহরির দোয়া" : "Sehri Dua",
-          "نَوَيْتُ اَنْ اَصُوْمَ رَمَضَانَ الْكَرِيْمِ مِنْ شَهْرِ رَمَضَانَ الْمُبَارَكِ فَرْضًا لَكَ يَا اَللهُ فَتَقَبَّلْ مِنِّى اِنَّكَ اَنْتَ السَّمِيْعُ الْعَلِيْمُ",
+          "نَوَيْتُ اَنْ اَصُوْمَ رَمَضَانَ الْكَرِيْمِ مِنْ শَهْرِ رَمَضَانَ الْمُبَارَكِ فَرْضًا لَكَ يَا اَللهُ فَتَقَبَّلْ مِنِّى اِنَّكَ اَنْتَ السَّمِيْعُ الْعَلِيْمُ",
           widget.isBangla 
             ? "নাওয়াইতু আন আছুমা গাদাম মিন শাহরি রামাদ্বানাল মুবারাকি ফারদাল্লাকা ইয়া আল্লাহু ফাতাক্বাব্বাল মিন্নি ইন্নাকা আনতাস সামিউল আলিম।" 
             : "Nawaitu an asuma ghadam min shahri ramadanal mubaraki fardal-laka ya Allahu fataqabbal minni innaka antas-samiul 'alim.",
@@ -792,13 +792,13 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 16),
         _buildDuaCard(
           widget.isBangla ? "ইফতারের দোয়া" : "Iftar Dua",
-          "اللَّهُمَّ لَكَ صُمْتُ وَتَوَكَّلْتُ عَلَى رِزْقِكَ وَأَفْطَرْتُ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ",
+          "اللَّهُمَّ لَكَ صُمْتُ وَبِكَ آمَنْتُ وَعَلَيْكَ تَوَكَّلْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ",
           widget.isBangla 
-            ? "আল্লাহুম্মা লাকা ছুমতু ওয়া তা'ওয়াক্কালতু আ'লা রিজকিকা ওয়া আফতারতু বি রাহমাতিকা ইয়া আর হামার রা-হিমীন।" 
-            : "Allahumma laka sumtu wa tawakkaltu 'ala rizqika wa aftartu bi-rahmatika ya arhamar-rahimin.",
+            ? "আল্লাহুম্মা লাকা ছুমতু ওয়া বিকা আমানতু ওয়া আলাইকা তাওয়াক্কালতু ওয়া আলা রিযক্বিকা আফতারতু।" 
+            : "Allahumma laka sumtu wa bika amantu wa 'alayka tawakkaltu wa 'ala rizqika aftartu.",
           widget.isBangla 
-            ? "হে আল্লাহ! আমি আপনার সন্তুষ্টির জন্য রোজা রেখেছি এবং আপনার ওপর ভরসা করেছি, আপনার দেওয়া রিজিক দিয়েই ইফতার করছি। আপনার দয়ার উসিলায়, হে শ্রেষ্ঠ দয়ালু।" 
-            : "O Allah! I fasted for You and I put my trust in Your provision and I break my fast with Your mercy, O Most Merciful of the merciful.",
+            ? "হে আল্লাহ! আমি আপনার সন্তুষ্টির জন্য রোজা রেখেছি এবং আপনার ওপরই ঈমান এনেছি, আপনার ওপর ভরসা করেছি এবং আপনার দেওয়া রিজিক দিয়েই ইফতার করছি।" 
+            : "O Allah! I fasted for You and I believe in You and I put my trust in You and I break my fast with Your sustenance.",
           primaryGreen, surfaceColor, textColor, subtextColor
         ),
       ],
