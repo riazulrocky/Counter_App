@@ -195,6 +195,7 @@ class _CounterPageState extends State<CounterPage> {
           borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Container(
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -209,8 +210,9 @@ class _CounterPageState extends State<CounterPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              Expanded(
+              Flexible(
                 child: ListView.builder(
+                  shrinkWrap: true,
                   itemCount: _allDhikrs.length,
                   itemBuilder: (context, index) {
                     final dhikr = _allDhikrs[index];
@@ -256,7 +258,7 @@ class _CounterPageState extends State<CounterPage> {
       builder: (context) {
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-          height: 500,
+          height: MediaQuery.of(context).size.height * 0.6,
           child: Column(
             children: [
               Text(
@@ -265,41 +267,45 @@ class _CounterPageState extends State<CounterPage> {
               ),
               const SizedBox(height: 20),
               Expanded(
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    childAspectRatio: 1.5,
-                  ),
-                  itemCount: 500,
-                  itemBuilder: (context, index) {
-                    final count = index + 1;
-                    final isSelected = _targetCount == count;
-                    return InkWell(
-                      onTap: () {
-                        setState(() {
-                          _targetCount = count;
-                          if (_counter > _targetCount) _counter = _targetCount;
-                        });
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: isSelected ? Colors.green.shade600 : (widget.isDarkMode ? Colors.white10 : Colors.grey.shade100),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          _formatNumber(count.toString()),
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : (widget.isDarkMode ? Colors.white70 : Colors.black87),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: constraints.maxWidth > 600 ? 6 : 4,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                        childAspectRatio: 1.5,
                       ),
+                      itemCount: 500,
+                      itemBuilder: (context, index) {
+                        final count = index + 1;
+                        final isSelected = _targetCount == count;
+                        return InkWell(
+                          onTap: () {
+                            setState(() {
+                              _targetCount = count;
+                              if (_counter > _targetCount) _counter = _targetCount;
+                            });
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: isSelected ? Colors.green.shade600 : (widget.isDarkMode ? Colors.white10 : Colors.grey.shade100),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              _formatNumber(count.toString()),
+                              style: TextStyle(
+                                color: isSelected ? Colors.white : (widget.isDarkMode ? Colors.white70 : Colors.black87),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     );
-                  },
+                  }
                 ),
               ),
             ],
@@ -513,98 +519,105 @@ class _CounterPageState extends State<CounterPage> {
 
   Widget _buildCounterBody(
       Color primaryGreen, Duration animationDuration, double screenWidth) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10.0),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 400),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(height: 5),
-              InkWell(
-                onTap: _showDhikrPicker,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: widget.isDarkMode
-                        ? const Color(0xFF1E293B)
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4))
-                    ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double maxWidth = constraints.maxWidth;
+        final double horizontalPadding = maxWidth > 600 ? maxWidth * 0.15 : 24.0;
+
+        return SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 10.0),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 5),
+                  InkWell(
+                    onTap: _showDhikrPicker,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: widget.isDarkMode
+                            ? const Color(0xFF1E293B)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4))
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.auto_awesome, color: primaryGreen),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(_isBangla ? "যিকির" : "Dhikr",
+                                    style: const TextStyle(
+                                        fontSize: 12, color: Colors.grey)),
+                                Text(
+                                    _isBangla
+                                        ? _currentDhikr.nameBn
+                                        : _currentDhikr.nameEn,
+                                    style: const TextStyle(
+                                        fontSize: 16, fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                          ),
+                          Icon(Icons.keyboard_arrow_down, color: primaryGreen),
+                        ],
+                      ),
+                    ),
                   ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.auto_awesome, color: primaryGreen),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: 16),
+                  if (!_currentDhikr.isGeneral)
+                    InkWell(
+                      onTap: _showTargetCountPicker,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        decoration: BoxDecoration(
+                          color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4))
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(_isBangla ? "যিকির" : "Dhikr",
-                                style: const TextStyle(
-                                    fontSize: 12, color: Colors.grey)),
-                            Text(
-                                _isBangla
-                                    ? _currentDhikr.nameBn
-                                    : _currentDhikr.nameEn,
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(_isBangla ? "লক্ষ্য সংখ্যা" : "Target Count",
+                                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                                Text(_formatNumber(_targetCount.toString()),
+                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                            Icon(Icons.edit_note_rounded, color: primaryGreen),
                           ],
                         ),
                       ),
-                      Icon(Icons.keyboard_arrow_down, color: primaryGreen),
-                    ],
-                  ),
-                ),
+                    ),
+                  const SizedBox(height: 20),
+                  _buildCounterCard(primaryGreen, animationDuration),
+                  const SizedBox(height: 30),
+                  _buildModernActionButtons(primaryGreen),
+                ],
               ),
-              const SizedBox(height: 16),
-              if (!_currentDhikr.isGeneral)
-                InkWell(
-                  onTap: _showTargetCountPicker,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    decoration: BoxDecoration(
-                      color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4))
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(_isBangla ? "লক্ষ্য সংখ্যা" : "Target Count",
-                                style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                            Text(_formatNumber(_targetCount.toString()),
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                        Icon(Icons.edit_note_rounded, color: primaryGreen),
-                      ],
-                    ),
-                  ),
-                ),
-              const SizedBox(height: 20),
-              _buildCounterCard(primaryGreen, animationDuration),
-              const SizedBox(height: 30),
-              _buildModernActionButtons(primaryGreen),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      }
     );
   }
 
@@ -674,7 +687,7 @@ class _CounterPageState extends State<CounterPage> {
             child: Text(
               _formatNumber(_counter.toString()),
               style: TextStyle(
-                fontSize: 90,
+                fontSize: 100,
                 fontWeight: FontWeight.bold,
                 color: widget.isDarkMode ? Colors.white : Colors.black,
               ),
@@ -701,26 +714,26 @@ class _CounterPageState extends State<CounterPage> {
             icon: Icons.remove,
             colors: [Colors.red.shade400, Colors.red.shade700],
             onPressed: _decrementCounter,
-            size: 48,
+            size: 52,
           ),
         ),
-        const SizedBox(width: 20),
+        const SizedBox(width: 24),
         Flexible(
           child: _modernActionButton(
             icon: Icons.add,
             colors: [primaryGreen, Colors.green.shade800],
             onPressed: _incrementCounter,
-            size: 68,
+            size: 76,
             isLarge: true,
           ),
         ),
-        const SizedBox(width: 20),
+        const SizedBox(width: 24),
         Flexible(
           child: _modernActionButton(
             icon: Icons.refresh,
             colors: [Colors.orange.shade700, Colors.orange.shade900],
             onPressed: _resetCounter,
-            size: 48,
+            size: 52,
           ),
         ),
       ],
@@ -757,7 +770,7 @@ class _CounterPageState extends State<CounterPage> {
             child: Icon(
               icon,
               color: Colors.white,
-              size: isLarge ? 30 : 22,
+              size: isLarge ? 34 : 24,
             ),
           ),
         ),

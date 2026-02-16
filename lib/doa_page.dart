@@ -42,8 +42,7 @@ class _DoaPageState extends State<DoaPage> {
   String _searchQuery = "";
   String _selectedCategory = "All";
 
-  static const List<DoaData> _allData = [
-    // 1. Sayyid al-Istighfar (Top)
+  static const List<DoaData> _allDoas = [
     DoaData(
       titleBn: "সাইয়্যেদুল ইস্তিগফার",
       titleEn: "Sayyid al-Istighfar",
@@ -55,7 +54,6 @@ class _DoaPageState extends State<DoaPage> {
       categoryBn: "ক্ষমা",
       categoryEn: "Forgiveness",
     ),
-    // 2. Before Sleeping
     DoaData(
       titleBn: "ঘুমানোর পূর্বে দোয়া",
       titleEn: "Dua before sleeping",
@@ -67,7 +65,6 @@ class _DoaPageState extends State<DoaPage> {
       categoryBn: "দৈনন্দিন",
       categoryEn: "Daily",
     ),
-    // 3. After Waking Up
     DoaData(
       titleBn: "ঘুম থেকে ওঠার দোয়া",
       titleEn: "Dua after waking up",
@@ -126,7 +123,7 @@ class _DoaPageState extends State<DoaPage> {
     DoaData(
       titleBn: "ক্ষমা প্রার্থনার দোয়া",
       titleEn: "Dua for Forgiveness",
-      arabic: "رَبَّنَا ظَلَمْنَا أَنفُسَنَا وَإِن لَّمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ الْخَاسِرِينَ",
+      arabic: "رَبَّنَا ظَلَمْنَا أَنفু্সَنَا وَإِن لَّমْ تَগْفِرْ لَنَا وَতَرْحَمْنَا لَنَكُونَنَّ مِنَ الْখাসিরীন",
       uccharonBn: "রাব্বানা যালামনা আনফুসানা ওয়া ইনলাম তাগফির লানা ওয়া তারহামনা লানাকুনান্না মিনাল খাসিরীন",
       uccharonEn: "Rabbana zalamna anfusana wa il-lam taghfir lana wa tarhamna lanakunanna minal-khasireen",
       meaningBn: "হে আমাদের পালনকর্তা! আমরা নিজেদের প্রতি জুলুম করেছি। যদি আপনি আমাদের ক্ষমা না করেন এবং আমাদের প্রতি রহম না করেন, তবে আমরা অবশ্যই ক্ষতিগ্রস্তদের অন্তর্ভুক্ত হব।",
@@ -235,13 +232,13 @@ class _DoaPageState extends State<DoaPage> {
     ),
   ];
 
-  List<DoaData> get _filteredData {
-    return _allData.where((item) {
-      final matchesSearch = (widget.isBangla ? item.titleBn : item.titleEn)
+  List<DoaData> get _filteredDoas {
+    return _allDoas.where((doa) {
+      final matchesSearch = (widget.isBangla ? doa.titleBn : doa.titleEn)
           .toLowerCase()
           .contains(_searchQuery.toLowerCase());
       final matchesCategory = _selectedCategory == "All" || 
-          item.categoryEn == _selectedCategory;
+          doa.categoryEn == _selectedCategory;
       return matchesSearch && matchesCategory;
     }).toList();
   }
@@ -278,7 +275,7 @@ class _DoaPageState extends State<DoaPage> {
                 onChanged: (value) => setState(() => _searchQuery = value),
                 style: TextStyle(color: textColor),
                 decoration: InputDecoration(
-                  hintText: widget.isBangla ? "খুঁজুন..." : "Search...",
+                  hintText: widget.isBangla ? "দোয়া খুঁজুন..." : "Search Doa...",
                   hintStyle: TextStyle(color: subtextColor),
                   prefixIcon: Icon(Icons.search, color: primaryGreen),
                   border: InputBorder.none,
@@ -329,9 +326,9 @@ class _DoaPageState extends State<DoaPage> {
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: _filteredData.length,
+              itemCount: _filteredDoas.length,
               itemBuilder: (context, index) {
-                final item = _filteredData[index];
+                final doa = _filteredDoas[index];
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(
@@ -349,7 +346,7 @@ class _DoaPageState extends State<DoaPage> {
                     color: Colors.transparent,
                     child: InkWell(
                       borderRadius: BorderRadius.circular(20),
-                      onTap: () => _showDetail(context, item, index + 1, primaryGreen, surfaceColor, textColor, subtextColor),
+                      onTap: () => _showDoaDetail(context, doa, index + 1, primaryGreen, surfaceColor, textColor, subtextColor),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Row(
@@ -377,7 +374,7 @@ class _DoaPageState extends State<DoaPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.isBangla ? item.titleBn : item.titleEn,
+                                    widget.isBangla ? doa.titleBn : doa.titleEn,
                                     style: TextStyle(
                                       color: textColor,
                                       fontSize: 15,
@@ -386,7 +383,7 @@ class _DoaPageState extends State<DoaPage> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    widget.isBangla ? item.categoryBn : item.categoryEn,
+                                    widget.isBangla ? doa.categoryBn : doa.categoryEn,
                                     style: TextStyle(
                                       color: primaryGreen,
                                       fontSize: 11,
@@ -425,7 +422,7 @@ class _DoaPageState extends State<DoaPage> {
     }
   }
 
-  void _showDetail(BuildContext context, DoaData item, int index, Color primary, Color surface, Color text, Color subtext) {
+  void _showDoaDetail(BuildContext context, DoaData doa, int index, Color primary, Color surface, Color text, Color subtext) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -439,7 +436,7 @@ class _DoaPageState extends State<DoaPage> {
             children: [
               Center(
                 child: Text(
-                  widget.isBangla ? item.titleBn : item.titleEn,
+                  widget.isBangla ? doa.titleBn : doa.titleEn,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: text,
@@ -458,21 +455,21 @@ class _DoaPageState extends State<DoaPage> {
                   border: Border.all(color: primary.withOpacity(0.1)),
                 ),
                 child: Text(
-                  item.arabic,
+                  doa.arabic,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: primary,
-                    fontSize: 22,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'serif',
-                    height: 1.8,
+                    height: 1.6,
                   ),
                 ),
               ),
               const SizedBox(height: 24),
-              _buildSection(widget.isBangla ? "উচ্চারণ:" : "Pronunciation:", widget.isBangla ? item.uccharonBn : item.uccharonEn, primary, text),
+              _buildSection(widget.isBangla ? "উচ্চারণ:" : "Pronunciation:", widget.isBangla ? doa.uccharonBn : doa.uccharonEn, primary, text),
               const SizedBox(height: 16),
-              _buildSection(widget.isBangla ? "অর্থ:" : "Meaning:", widget.isBangla ? item.meaningBn : item.meaningEn, primary, text),
+              _buildSection(widget.isBangla ? "অর্থ:" : "Meaning:", widget.isBangla ? doa.meaningBn : doa.meaningEn, primary, text),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
@@ -508,7 +505,7 @@ class _DoaPageState extends State<DoaPage> {
           content,
           style: TextStyle(
             color: text,
-            fontSize: 15,
+            fontSize: 16,
             height: 1.5,
             fontWeight: FontWeight.w500,
           ),

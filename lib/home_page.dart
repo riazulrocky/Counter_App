@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'allah_names_page.dart';
 import 'ramadan_page.dart';
-import 'doa_page.dart';
-import 'zakat_calculator_page.dart';
 
 class QuranVerse {
   final String textBn;
@@ -45,46 +42,178 @@ class _HomePageState extends State<HomePage> {
   String _nextEvent = "";
 
   final Map<String, int> _cityAdjustments = {
-    'Dhaka': 0, 'Chattogram': -5, 'Sylhet': -6, 'Rajshahi': 7,
-    'Khulna': 3, 'Barisal': 1, 'Rangpur': 6, 'Mymensingh': -1
+    'Dhaka': 0,
+    'Chattogram': -5,
+    'Sylhet': -6,
+    'Rajshahi': 7,
+    'Khulna': 3,
+    'Barisal': 1,
+    'Rangpur': 6,
+    'Mymensingh': -1
   };
 
   final Map<String, String> _cityNamesBn = {
-    'Dhaka': 'ঢাকা', 'Chattogram': 'চট্টগ্রাম', 'Sylhet': 'সিলেট', 'Rajshahi': 'রাজশাহী',
-    'Khulna': 'খুলনা', 'Barisal': 'বরিশাল', 'Rangpur': 'রংপুর', 'Mymensingh': 'ময়মনসিংহ',
+    'Dhaka': 'ঢাকা',
+    'Chattogram': 'চট্টগ্রাম',
+    'Sylhet': 'সিলেট',
+    'Rajshahi': 'রাজশাহী',
+    'Khulna': 'খুলনা',
+    'Barisal': 'বরিশাল',
+    'Rangpur': 'রংপুর',
+    'Mymensingh': 'ময়মনসিংহ',
   };
 
   final List<RamadanDay> _ramadanData = [
-    RamadanDay(ramadan: 1, date: DateTime(2026, 2, 18), sehri: "05:15", iftar: "18:02"),
-    RamadanDay(ramadan: 2, date: DateTime(2026, 2, 19), sehri: "05:14", iftar: "18:03"),
-    RamadanDay(ramadan: 3, date: DateTime(2026, 2, 20), sehri: "05:13", iftar: "18:03"),
-    RamadanDay(ramadan: 4, date: DateTime(2026, 2, 21), sehri: "05:12", iftar: "18:04"),
-    RamadanDay(ramadan: 5, date: DateTime(2026, 2, 22), sehri: "05:11", iftar: "18:04"),
-    RamadanDay(ramadan: 6, date: DateTime(2026, 2, 23), sehri: "05:10", iftar: "18:05"),
-    RamadanDay(ramadan: 7, date: DateTime(2026, 2, 24), sehri: "05:09", iftar: "18:05"),
-    RamadanDay(ramadan: 8, date: DateTime(2026, 2, 25), sehri: "05:08", iftar: "18:06"),
-    RamadanDay(ramadan: 9, date: DateTime(2026, 2, 26), sehri: "05:07", iftar: "18:06"),
-    RamadanDay(ramadan: 10, date: DateTime(2026, 2, 27), sehri: "05:06", iftar: "18:07"),
-    RamadanDay(ramadan: 11, date: DateTime(2026, 2, 28), sehri: "05:05", iftar: "18:07"),
-    RamadanDay(ramadan: 12, date: DateTime(2026, 3, 1), sehri: "05:04", iftar: "18:08"),
-    RamadanDay(ramadan: 13, date: DateTime(2026, 3, 2), sehri: "05:03", iftar: "18:08"),
-    RamadanDay(ramadan: 14, date: DateTime(2026, 3, 3), sehri: "05:02", iftar: "18:09"),
-    RamadanDay(ramadan: 15, date: DateTime(2026, 3, 4), sehri: "05:01", iftar: "18:09"),
-    RamadanDay(ramadan: 16, date: DateTime(2026, 3, 5), sehri: "05:00", iftar: "18:10"),
-    RamadanDay(ramadan: 17, date: DateTime(2026, 3, 6), sehri: "04:59", iftar: "18:10"),
-    RamadanDay(ramadan: 18, date: DateTime(2026, 3, 7), sehri: "04:58", iftar: "18:11"),
-    RamadanDay(ramadan: 19, date: DateTime(2026, 3, 8), sehri: "04:57", iftar: "18:11"),
-    RamadanDay(ramadan: 20, date: DateTime(2026, 3, 9), sehri: "04:56", iftar: "18:12"),
-    RamadanDay(ramadan: 21, date: DateTime(2026, 3, 10), sehri: "04:55", iftar: "18:12"),
-    RamadanDay(ramadan: 22, date: DateTime(2026, 3, 11), sehri: "04:54", iftar: "18:13"),
-    RamadanDay(ramadan: 23, date: DateTime(2026, 3, 12), sehri: "04:53", iftar: "18:13"),
-    RamadanDay(ramadan: 24, date: DateTime(2026, 3, 13), sehri: "04:52", iftar: "18:14"),
-    RamadanDay(ramadan: 25, date: DateTime(2026, 3, 14), sehri: "04:51", iftar: "18:14"),
-    RamadanDay(ramadan: 26, date: DateTime(2026, 3, 15), sehri: "04:50", iftar: "18:15"),
-    RamadanDay(ramadan: 27, date: DateTime(2026, 3, 16), sehri: "04:49", iftar: "18:15"),
-    RamadanDay(ramadan: 28, date: DateTime(2026, 3, 17), sehri: "04:48", iftar: "18:16"),
-    RamadanDay(ramadan: 29, date: DateTime(2026, 3, 18), sehri: "04:47", iftar: "18:16"),
-    RamadanDay(ramadan: 30, date: DateTime(2026, 3, 19), sehri: "04:46", iftar: "18:17"),
+    RamadanDay(
+        ramadan: 1,
+        date: DateTime(2026, 2, 18),
+        sehri: "05:15",
+        iftar: "18:02"),
+    RamadanDay(
+        ramadan: 2,
+        date: DateTime(2026, 2, 19),
+        sehri: "05:14",
+        iftar: "18:03"),
+    RamadanDay(
+        ramadan: 3,
+        date: DateTime(2026, 2, 20),
+        sehri: "05:13",
+        iftar: "18:03"),
+    RamadanDay(
+        ramadan: 4,
+        date: DateTime(2026, 2, 21),
+        sehri: "05:12",
+        iftar: "18:04"),
+    RamadanDay(
+        ramadan: 5,
+        date: DateTime(2026, 2, 22),
+        sehri: "05:11",
+        iftar: "18:04"),
+    RamadanDay(
+        ramadan: 6,
+        date: DateTime(2026, 2, 23),
+        sehri: "05:10",
+        iftar: "18:05"),
+    RamadanDay(
+        ramadan: 7,
+        date: DateTime(2026, 2, 24),
+        sehri: "05:09",
+        iftar: "18:05"),
+    RamadanDay(
+        ramadan: 8,
+        date: DateTime(2026, 2, 25),
+        sehri: "05:08",
+        iftar: "18:06"),
+    RamadanDay(
+        ramadan: 9,
+        date: DateTime(2026, 2, 26),
+        sehri: "05:07",
+        iftar: "18:06"),
+    RamadanDay(
+        ramadan: 10,
+        date: DateTime(2026, 2, 27),
+        sehri: "05:06",
+        iftar: "18:07"),
+    RamadanDay(
+        ramadan: 11,
+        date: DateTime(2026, 2, 28),
+        sehri: "05:05",
+        iftar: "18:07"),
+    RamadanDay(
+        ramadan: 12,
+        date: DateTime(2026, 3, 1),
+        sehri: "05:04",
+        iftar: "18:08"),
+    RamadanDay(
+        ramadan: 13,
+        date: DateTime(2026, 3, 2),
+        sehri: "05:03",
+        iftar: "18:08"),
+    RamadanDay(
+        ramadan: 14,
+        date: DateTime(2026, 3, 3),
+        sehri: "05:02",
+        iftar: "18:09"),
+    RamadanDay(
+        ramadan: 15,
+        date: DateTime(2026, 3, 4),
+        sehri: "05:01",
+        iftar: "18:09"),
+    RamadanDay(
+        ramadan: 16,
+        date: DateTime(2026, 3, 5),
+        sehri: "05:00",
+        iftar: "18:10"),
+    RamadanDay(
+        ramadan: 17,
+        date: DateTime(2026, 3, 6),
+        sehri: "04:59",
+        iftar: "18:10"),
+    RamadanDay(
+        ramadan: 18,
+        date: DateTime(2026, 3, 7),
+        sehri: "04:58",
+        iftar: "18:11"),
+    RamadanDay(
+        ramadan: 19,
+        date: DateTime(2026, 3, 8),
+        sehri: "04:57",
+        iftar: "18:11"),
+    RamadanDay(
+        ramadan: 20,
+        date: DateTime(2026, 3, 9),
+        sehri: "04:56",
+        iftar: "18:12"),
+    RamadanDay(
+        ramadan: 21,
+        date: DateTime(2026, 3, 10),
+        sehri: "04:55",
+        iftar: "18:12"),
+    RamadanDay(
+        ramadan: 22,
+        date: DateTime(2026, 3, 11),
+        sehri: "04:54",
+        iftar: "18:13"),
+    RamadanDay(
+        ramadan: 23,
+        date: DateTime(2026, 3, 12),
+        sehri: "04:53",
+        iftar: "18:13"),
+    RamadanDay(
+        ramadan: 24,
+        date: DateTime(2026, 3, 13),
+        sehri: "04:52",
+        iftar: "18:14"),
+    RamadanDay(
+        ramadan: 25,
+        date: DateTime(2026, 3, 14),
+        sehri: "04:51",
+        iftar: "18:14"),
+    RamadanDay(
+        ramadan: 26,
+        date: DateTime(2026, 3, 15),
+        sehri: "04:50",
+        iftar: "18:15"),
+    RamadanDay(
+        ramadan: 27,
+        date: DateTime(2026, 3, 16),
+        sehri: "04:49",
+        iftar: "18:15"),
+    RamadanDay(
+        ramadan: 28,
+        date: DateTime(2026, 3, 17),
+        sehri: "04:48",
+        iftar: "18:16"),
+    RamadanDay(
+        ramadan: 29,
+        date: DateTime(2026, 3, 18),
+        sehri: "04:47",
+        iftar: "18:16"),
+    RamadanDay(
+        ramadan: 30,
+        date: DateTime(2026, 3, 19),
+        sehri: "04:46",
+        iftar: "18:17"),
   ];
 
   final List<QuranVerse> _dailyVerses = const [
@@ -113,7 +242,8 @@ class _HomePageState extends State<HomePage> {
       referenceEn: "Surah Al-Baqarah: 153",
     ),
     QuranVerse(
-      textBn: "আমার বান্দারা যখন আমার সম্পর্কে তোমাকে জিজ্ঞাসা করে, আমি তো তাদের নিকটেই আছি।",
+      textBn:
+          "আমার বান্দারা যখন আমার সম্পর্কে তোমাকে জিজ্ঞাসা করে, আমি তো তাদের নিকটেই আছি।",
       textEn: "When My servants ask you concerning Me, indeed I am near.",
       referenceBn: "সূরা আল-বাকারা: ১৮৬",
       referenceEn: "Surah Al-Baqarah: 186",
@@ -126,13 +256,16 @@ class _HomePageState extends State<HomePage> {
     ),
     QuranVerse(
       textBn: "আল্লাহ কোনো প্রাণীকে তার সাধ্যের বাইরে কষ্ট দেন না।",
-      textEn: "Allah does not charge a soul except [with that within] its capacity.",
+      textEn:
+          "Allah does not charge a soul except [with that within] its capacity.",
       referenceBn: "সূরা আল-বাকারা: ২৮৬",
       referenceEn: "Surah Al-Baqarah: 286",
     ),
     QuranVerse(
-      textBn: "আর তারা চক্রান্ত করে এবং আল্লাহও কৌশল করেন, আর আল্লাহই শ্রেষ্ঠ কৌশলী।",
-      textEn: "And they planned, and Allah planned. And Allah is the best of planners.",
+      textBn:
+          "আর তারা চক্রান্ত করে এবং আল্লাহও কৌশল করেন, আর আল্লাহই শ্রেষ্ঠ কৌশলী।",
+      textEn:
+          "And they planned, and Allah planned. And Allah is the best of planners.",
       referenceBn: "সূরা আল-ইমরান: ৫৪",
       referenceEn: "Surah Al-Imran: 54",
     ),
@@ -174,7 +307,8 @@ class _HomePageState extends State<HomePage> {
     ),
     QuranVerse(
       textBn: "মানুষের জন্য তাই রয়েছে যা সে চেষ্টা করে।",
-      textEn: "And that there is not for man except that [good] for which he strives.",
+      textEn:
+          "And that there is not for man except that [good] for which he strives.",
       referenceBn: "সূরা আন-নাজম: ৩৯",
       referenceEn: "Surah An-Najm: 39",
     ),
@@ -192,7 +326,8 @@ class _HomePageState extends State<HomePage> {
     ),
     QuranVerse(
       textBn: "যে ব্যক্তি একটি ভালো কাজ করল, সে তার দশগুণ পাবে।",
-      textEn: "Whoever comes [on the Day of Judgment] with a good deed will have ten times the like thereof.",
+      textEn:
+          "Whoever comes [on the Day of Judgment] with a good deed will have ten times the like thereof.",
       referenceBn: "সূরা আল-আনআম: ১৬০",
       referenceEn: "Surah Al-An'am: 160",
     ),
@@ -234,7 +369,8 @@ class _HomePageState extends State<HomePage> {
     ),
     QuranVerse(
       textBn: "হে আমাদের পালনকর্তা, আমাদের দুনিয়া ও আখিরাতে কল্যাণ দান করুন।",
-      textEn: "Our Lord, give us in this world [that which is] good and in the Hereafter [that which is] good.",
+      textEn:
+          "Our Lord, give us in this world [that which is] good and in the Hereafter [that which is] good.",
       referenceBn: "সূরা আল-বাকারা: ২০১",
       referenceEn: "Surah Al-Baqarah: 201",
     ),
@@ -246,13 +382,15 @@ class _HomePageState extends State<HomePage> {
     ),
     QuranVerse(
       textBn: "যে আল্লাহকে ভয় করে, আল্লাহ তার কাজ সহজ করে দেন।",
-      textEn: "And whoever fears Allah - He will make for him of his matter ease.",
+      textEn:
+          "And whoever fears Allah - He will make for him of his matter ease.",
       referenceBn: "সূরা আত-তালাক: ৪",
       referenceEn: "Surah At-Talaq: 4",
     ),
     QuranVerse(
       textBn: "আল্লাহর কাছে সবচেয়ে প্রিয় আমল হলো যা নিয়মিত করা হয়।",
-      textEn: "The most beloved of deeds to Allah are those that are most consistent.",
+      textEn:
+          "The most beloved of deeds to Allah are those that are most consistent.",
       referenceBn: "সহীহ বুখারী (হাদিস)",
       referenceEn: "Sahih Bukhari (Hadith)",
     ),
@@ -296,12 +434,8 @@ class _HomePageState extends State<HomePage> {
     final now = DateTime.now();
     int adj = _cityAdjustments[widget.selectedCity] ?? 0;
 
-    RamadanDay? todayData;
-    try {
-      todayData = _ramadanData.firstWhere(
-        (d) => d.date.year == now.year && d.date.month == now.month && d.date.day == now.day
-      );
-    } catch (_) {
+    RamadanDay? todayData = _getTodayData();
+    if (todayData == null) {
       _nextEvent = widget.isBangla ? "রমজান শুরু হয়নি" : "Ramadan not started";
       _timeLeft = Duration.zero;
       return;
@@ -319,10 +453,12 @@ class _HomePageState extends State<HomePage> {
     } else {
       final tomorrow = now.add(const Duration(days: 1));
       try {
-        final tomorrowData = _ramadanData.firstWhere(
-          (d) => d.date.year == tomorrow.year && d.date.month == tomorrow.month && d.date.day == tomorrow.day
-        );
-        DateTime nextSehri = _parseTime(tomorrowData.date, tomorrowData.sehri, adj);
+        final tomorrowData = _ramadanData.firstWhere((d) =>
+            d.date.year == tomorrow.year &&
+            d.date.month == tomorrow.month &&
+            d.date.day == tomorrow.day);
+        DateTime nextSehri =
+            _parseTime(tomorrowData.date, tomorrowData.sehri, adj);
         _nextEvent = widget.isBangla ? "সেহরির বাকি" : "Next Sehri In";
         _timeLeft = nextSehri.difference(now);
       } catch (_) {
@@ -332,15 +468,38 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  RamadanDay? _getTodayData() {
+    final now = DateTime.now();
+    try {
+      return _ramadanData.firstWhere((d) =>
+          d.date.year == now.year &&
+          d.date.month == now.month &&
+          d.date.day == now.day);
+    } catch (_) {
+      return null;
+    }
+  }
+
   DateTime _parseTime(DateTime date, String timeStr, int adjMinutes) {
     final parts = timeStr.split(':');
-    return DateTime(date.year, date.month, date.day, int.parse(parts[0]), int.parse(parts[1])).add(Duration(minutes: adjMinutes));
+    return DateTime(date.year, date.month, date.day, int.parse(parts[0]),
+            int.parse(parts[1]))
+        .add(Duration(minutes: adjMinutes));
   }
 
   String _toBn(String input) {
     if (!widget.isBangla) return input;
     final Map<String, String> conversionMap = {
-      '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪', '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯',
+      '0': '০',
+      '1': '১',
+      '2': '২',
+      '3': '৩',
+      '4': '৪',
+      '5': '৫',
+      '6': '৬',
+      '7': '৭',
+      '8': '৮',
+      '9': '৯',
     };
     String output = input;
     for (var key in conversionMap.keys) {
@@ -372,8 +531,10 @@ class _HomePageState extends State<HomePage> {
   void _showLocationPicker() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: widget.isDarkMode ? const Color(0xFF0F172A) : Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      backgroundColor:
+          widget.isDarkMode ? const Color(0xFF0F172A) : Colors.white,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (context) {
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
@@ -385,41 +546,50 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
                   widget.isBangla ? "লোকেশন নির্বাচন করুন" : "Select Location",
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
               const SizedBox(height: 20),
               Flexible(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final crossAxisCount = constraints.maxWidth > 600 ? 4 : 2;
-                    return GridView.count(
-                      shrinkWrap: true,
-                      crossAxisCount: crossAxisCount,
-                      childAspectRatio: 3,
-                      children: _cityNamesBn.keys.map((city) {
-                        return InkWell(
-                          onTap: () {
-                            widget.onLocationChanged(city);
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: widget.selectedCity == city ? Colors.green.shade600 : (widget.isDarkMode ? Colors.white10 : Colors.grey.shade100),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              widget.isBangla ? _cityNamesBn[city]! : city,
-                              style: TextStyle(color: widget.selectedCity == city ? Colors.white : (widget.isDarkMode ? Colors.white70 : Colors.black87), fontWeight: FontWeight.bold),
-                            ),
+                child: LayoutBuilder(builder: (context, constraints) {
+                  final crossAxisCount = constraints.maxWidth > 600 ? 4 : 2;
+                  return GridView.count(
+                    shrinkWrap: true,
+                    crossAxisCount: crossAxisCount,
+                    childAspectRatio: 3,
+                    children: _cityNamesBn.keys.map((city) {
+                      return InkWell(
+                        onTap: () {
+                          widget.onLocationChanged(city);
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: widget.selectedCity == city
+                                ? Colors.green.shade600
+                                : (widget.isDarkMode
+                                    ? Colors.white10
+                                    : Colors.grey.shade100),
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        );
-                      }).toList(),
-                    );
-                  }
-                ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            widget.isBangla ? _cityNamesBn[city]! : city,
+                            style: TextStyle(
+                                color: widget.selectedCity == city
+                                    ? Colors.white
+                                    : (widget.isDarkMode
+                                        ? Colors.white70
+                                        : Colors.black87),
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }),
               ),
             ],
           ),
@@ -431,175 +601,195 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final primaryGreen = Colors.green.shade600;
-    final surfaceColor = widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white;
+    final surfaceColor =
+        widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white;
     final textColor = widget.isDarkMode ? Colors.white : Colors.black87;
     final subtextColor = widget.isDarkMode ? Colors.white70 : Colors.black54;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        final bool isTablet = maxWidth > 600;
-        final double horizontalPadding = isTablet ? maxWidth * 0.1 : 20.0;
+    return LayoutBuilder(builder: (context, constraints) {
+      final double maxWidth = constraints.maxWidth;
+      final bool isTablet = maxWidth > 600;
+      final bool isLargeTablet = maxWidth > 900;
+      final double horizontalPadding = isLargeTablet ? maxWidth * 0.15 : (isTablet ? maxWidth * 0.1 : 20.0);
 
-        return Scaffold(
-          backgroundColor: Colors.transparent,
-          body: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 16),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 800),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Modern Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.isBangla ? "আসসালামু আলাইকুম" : "Assalamu Alaikum",
-                              style: TextStyle(
-                                color: primaryGreen,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.5,
-                              ),
+      return Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding:
+              EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 16),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1000),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Modern Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.isBangla
+                                ? "আসসালামু আলাইকুম"
+                                : "Assalamu Alaikum",
+                            style: TextStyle(
+                              color: primaryGreen,
+                              fontSize: isTablet ? 16 : 14,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _getGreeting(),
-                              style: TextStyle(
-                                color: textColor,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        InkWell(
-                          onTap: _showLocationPicker,
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: primaryGreen.withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(Icons.location_on_outlined, color: primaryGreen, size: 24),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    
-                    // Ramadan Card
-                    _buildModernCountdownCard(primaryGreen, isTablet),
-                    
-                    const SizedBox(height: 32),
-                    
-                    // Daily Inspiration Section
-                    _buildDailyInspiration(primaryGreen, surfaceColor, textColor, subtextColor),
-                    
-                    const SizedBox(height: 32),
-                    
-                    // Feature Grid Label
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          widget.isBangla ? "প্রয়োজনীয় সেবা" : "Essential Services",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
+                          const SizedBox(height: 4),
+                          Text(
+                            _getGreeting(),
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: isTablet ? 32 : 24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        Icon(Icons.grid_view_rounded, size: 20, color: subtextColor),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    // Responsive Feature Grid
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: maxWidth > 900 ? 6 : (maxWidth > 600 ? 4 : 3),
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
-                        childAspectRatio: 0.82,
+                        ],
                       ),
-                      itemCount: 6,
-                      itemBuilder: (context, index) {
-                        final features = [
-                          _buildModernFeatureCard(
-                            widget.isBangla ? "নামাজের সময়" : "Prayer Times",
-                            Icons.access_time_filled_rounded,
-                            Colors.blue.shade700,
-                            surfaceColor,
-                            textColor,
-                            () => widget.onNavigate(3),
+                      InkWell(
+                        onTap: _showLocationPicker,
+                        child: Container(
+                          padding: EdgeInsets.all(isTablet ? 14 : 10),
+                          decoration: BoxDecoration(
+                            color: primaryGreen.withOpacity(0.1),
+                            shape: BoxShape.circle,
                           ),
-                          _buildModernFeatureCard(
-                            widget.isBangla ? "রমজান ক্যালেন্ডার" : "Ramadan Calendar",
-                            Icons.calendar_month_rounded,
-                            Colors.orange.shade700,
-                            surfaceColor,
-                            textColor,
-                            () => widget.onNavigate(2),
-                          ),
-                          _buildModernFeatureCard(
-                            widget.isBangla ? "ডিজিটাল তাসবিহ" : "Digital Tasbih",
-                            Icons.fingerprint_rounded,
-                            primaryGreen,
-                            surfaceColor,
-                            textColor,
-                            () => widget.onNavigate(1),
-                          ),
-                          _buildModernFeatureCard(
-                            widget.isBangla ? "যাকাত ক্যালকুলেটর" : "Zakat Calculator",
-                            Icons.calculate_rounded,
-                            Colors.teal.shade700,
-                            surfaceColor,
-                            textColor,
-                            () => widget.onNavigate(5),
-                          ),
-                          _buildModernFeatureCard(
-                            widget.isBangla ? "ছোট দোয়া" : "Short Dua",
-                            Icons.menu_book_rounded,
-                            Colors.purple.shade700,
-                            surfaceColor,
-                            textColor,
-                            () => widget.onNavigate(6),
-                          ),
-                          _buildModernFeatureCard(
-                            widget.isBangla ? "আল্লাহর নাম" : "99 Names",
-                            Icons.auto_awesome_rounded,
-                            Colors.amber.shade700,
-                            surfaceColor,
-                            textColor,
-                            () => widget.onNavigate(4),
-                          ),
-                        ];
-                        return features[index];
-                      },
+                          child: Icon(Icons.location_on_outlined,
+                              color: primaryGreen, size: isTablet ? 30 : 24),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: isTablet ? 32 : 24),
+
+                  // Ramadan Card
+                  _buildModernCountdownCard(primaryGreen, isTablet),
+
+                  SizedBox(height: isTablet ? 32 : 24),
+
+                  // Today's Timing Section (New)
+                  _buildTodayScheduleSection(primaryGreen, surfaceColor, textColor, maxWidth),
+
+                  SizedBox(height: isTablet ? 40 : 32),
+
+                  // Daily Inspiration Section
+                  _buildDailyInspiration(
+                      primaryGreen, surfaceColor, textColor, subtextColor, maxWidth),
+
+                  SizedBox(height: isTablet ? 40 : 32),
+
+                  // Feature Grid Label
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.isBangla
+                            ? "প্রয়োজনীয় সেবা"
+                            : "Essential Services",
+                        style: TextStyle(
+                          fontSize: isTablet ? 22 : 18,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                        ),
+                      ),
+                      Icon(Icons.grid_view_rounded,
+                          size: isTablet ? 24 : 20, color: subtextColor),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Responsive Feature Grid
+                  GridView(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: isLargeTablet ? 200 : (isTablet ? 180 : 130),
+                      mainAxisSpacing: isTablet ? 16 : 12,
+                      crossAxisSpacing: isTablet ? 16 : 12,
+                      childAspectRatio: isTablet ? 1.0 : 0.85,
                     ),
-                    const SizedBox(height: 32),
-                    
-                    // Ramadan Dua Section (New)
-                    _buildRamadanDuaSection(primaryGreen, surfaceColor, textColor, subtextColor),
-                    
-                    const SizedBox(height: 10),
-                  ],
-                ),
+                    children: [
+                      _buildModernFeatureCard(
+                        widget.isBangla ? "নামাজের সময়" : "Prayer Times",
+                        Icons.access_time_filled_rounded,
+                        Colors.blue.shade700,
+                        surfaceColor,
+                        textColor,
+                        () => widget.onNavigate(3),
+                        isTablet,
+                      ),
+                      _buildModernFeatureCard(
+                        widget.isBangla
+                            ? "রমজান ক্যালেন্ডার"
+                            : "Ramadan Calendar",
+                        Icons.calendar_month_rounded,
+                        Colors.orange.shade700,
+                        surfaceColor,
+                        textColor,
+                        () => widget.onNavigate(2),
+                        isTablet,
+                      ),
+                      _buildModernFeatureCard(
+                        widget.isBangla ? "ডিজিটাল তাসবিহ" : "Digital Tasbih",
+                        Icons.fingerprint_rounded,
+                        primaryGreen,
+                        surfaceColor,
+                        textColor,
+                        () => widget.onNavigate(1),
+                        isTablet,
+                      ),
+                      _buildModernFeatureCard(
+                        widget.isBangla
+                            ? "যাকাত ক্যালকুলেটর"
+                            : "Zakat Calculator",
+                        Icons.calculate_rounded,
+                        Colors.teal.shade700,
+                        surfaceColor,
+                        textColor,
+                        () => widget.onNavigate(5),
+                        isTablet,
+                      ),
+                      _buildModernFeatureCard(
+                        widget.isBangla ? "ছোট দোয়া" : "Short Dua",
+                        Icons.menu_book_rounded,
+                        Colors.purple.shade700,
+                        surfaceColor,
+                        textColor,
+                        () => widget.onNavigate(6),
+                        isTablet,
+                      ),
+                      _buildModernFeatureCard(
+                        widget.isBangla ? "আল্লাহর নাম" : "99 Names",
+                        Icons.auto_awesome_rounded,
+                        Colors.amber.shade700,
+                        surfaceColor,
+                        textColor,
+                        () => widget.onNavigate(4),
+                        isTablet,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: isTablet ? 40 : 32),
+
+                  // Ramadan Dua Section (New)
+                  _buildRamadanDuaSection(
+                      primaryGreen, surfaceColor, textColor, subtextColor, maxWidth),
+
+                  const SizedBox(height: 10),
+                ],
               ),
             ),
           ),
-        );
-      }
-    );
+        ),
+      );
+    });
   }
 
   Widget _buildModernCountdownCard(Color primaryGreen, bool isTablet) {
@@ -627,40 +817,41 @@ class _HomePageState extends State<HomePage> {
             top: -20,
             child: Icon(
               Icons.dark_mode_outlined,
-              size: isTablet ? 150 : 100,
+              size: isTablet ? 200 : 120,
               color: Colors.white.withOpacity(0.1),
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(isTablet ? 32 : 24),
+            padding: EdgeInsets.all(isTablet ? 40 : 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: isTablet ? 14 : 10, vertical: isTablet ? 6 : 4),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         widget.isBangla ? "রমজান ২০২৬" : "Ramadan 2026",
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
-                          fontSize: 12,
+                          fontSize: isTablet ? 14 : 12,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: isTablet ? 24 : 16),
+                SizedBox(height: isTablet ? 28 : 16),
                 Text(
                   _nextEvent,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.9),
-                    fontSize: isTablet ? 20 : 16,
+                    fontSize: isTablet ? 22 : 16,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -669,25 +860,29 @@ class _HomePageState extends State<HomePage> {
                   _formatDuration(_timeLeft),
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: isTablet ? 48 : 36,
+                    fontSize: isTablet ? 56 : 36,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.5,
                   ),
                 ),
-                SizedBox(height: isTablet ? 24 : 16),
+                SizedBox(height: isTablet ? 28 : 16),
                 InkWell(
                   onTap: _showLocationPicker,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        widget.isBangla ? "${_cityNamesBn[widget.selectedCity]!}, বাংলাদেশ" : "${widget.selectedCity}, Bangladesh",
+                        widget.isBangla
+                            ? "${_cityNamesBn[widget.selectedCity]!}, বাংলাদেশ"
+                            : "${widget.selectedCity}, Bangladesh",
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.7),
-                          fontSize: isTablet ? 14 : 12,
+                          fontSize: isTablet ? 16 : 12,
                         ),
                       ),
-                      Icon(Icons.edit_location_alt_rounded, color: Colors.white.withOpacity(0.7), size: isTablet ? 18 : 14),
+                      Icon(Icons.edit_location_alt_rounded,
+                          color: Colors.white.withOpacity(0.7),
+                          size: isTablet ? 20 : 14),
                     ],
                   ),
                 ),
@@ -699,18 +894,112 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildDailyInspiration(Color primaryGreen, Color surfaceColor, Color textColor, Color subtextColor) {
+  Widget _buildTodayScheduleSection(Color primaryGreen, Color surfaceColor, Color textColor, double maxWidth) {
+    final today = _getTodayData();
+    if (today == null) return const SizedBox.shrink();
+
+    int adj = _cityAdjustments[widget.selectedCity] ?? 0;
+    DateTime sehriTime = _parseTime(today.date, today.sehri, adj);
+    DateTime iftarTime = _parseTime(today.date, today.iftar, adj);
+
+    final String sehriStr = "${sehriTime.hour.toString().padLeft(2, '0')}:${sehriTime.minute.toString().padLeft(2, '0')}";
+    final String iftarStr = "${iftarTime.hour.toString().padLeft(2, '0')}:${iftarTime.minute.toString().padLeft(2, '0')}";
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.isBangla ? "আজকের সময়সূচী" : "Today's Schedule",
+          style: TextStyle(
+            fontSize: (maxWidth * 0.045).clamp(18.0, 22.0),
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: _buildTimeCard(
+                widget.isBangla ? "সেহরির শেষ" : "Sehri Ends",
+                _toBn(sehriStr),
+                Icons.wb_twilight_rounded,
+                Colors.orange.shade700,
+                surfaceColor,
+                textColor,
+                maxWidth,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildTimeCard(
+                widget.isBangla ? "ইফতার শুরু" : "Iftar Begins",
+                _toBn(iftarStr),
+                Icons.wb_sunny_rounded,
+                Colors.deepOrange.shade700,
+                surfaceColor,
+                textColor,
+                maxWidth,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTimeCard(String label, String time, IconData icon, Color color, Color surface, Color text, double maxWidth) {
+    final double padding = (maxWidth * 0.035).clamp(12.0, 20.0);
+    final double iconSize = (maxWidth * 0.06).clamp(24.0, 32.0);
+    final double labelSize = (maxWidth * 0.03).clamp(10.0, 14.0);
+    final double timeSize = (maxWidth * 0.05).clamp(18.0, 24.0);
+
+    return Container(
+      padding: EdgeInsets.all(padding),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(widget.isDarkMode ? 0.2 : 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: iconSize),
+          const SizedBox(height: 8),
+          Text(label, style: TextStyle(fontSize: labelSize, color: text.withOpacity(0.7))),
+          const SizedBox(height: 4),
+          Text(time, style: TextStyle(fontSize: timeSize, fontWeight: FontWeight.bold, color: text)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDailyInspiration(Color primaryGreen, Color surfaceColor,
+      Color textColor, Color subtextColor, double maxWidth) {
     final int dayIndex = (DateTime.now().day - 1) % _dailyVerses.length;
     final QuranVerse currentVerse = _dailyVerses[dayIndex];
+    
+    // Dynamic values based on width
+    final double padding = (maxWidth * 0.05).clamp(16.0, 32.0);
+    final double titleSize = (maxWidth * 0.04).clamp(14.0, 20.0);
+    final double contentSize = (maxWidth * 0.045).clamp(15.0, 24.0);
+    final double iconSize = (maxWidth * 0.08).clamp(24.0, 48.0);
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
         color: surfaceColor,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: widget.isDarkMode ? Colors.white10 : Colors.black.withOpacity(0.05),
+          color: widget.isDarkMode
+              ? Colors.white10
+              : Colors.black.withOpacity(0.05),
         ),
         boxShadow: [
           BoxShadow(
@@ -725,24 +1014,26 @@ class _HomePageState extends State<HomePage> {
         children: [
           Row(
             children: [
-              Icon(Icons.format_quote_rounded, color: primaryGreen, size: 28),
+              Icon(Icons.format_quote_rounded, color: primaryGreen, size: iconSize),
               const SizedBox(width: 8),
               Text(
                 widget.isBangla ? "আজকের অনুপ্রেরণা" : "Daily Inspiration",
                 style: TextStyle(
                   color: primaryGreen,
-                  fontSize: 14,
+                  fontSize: titleSize,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: padding * 0.6),
           Text(
-            widget.isBangla ? "“${currentVerse.textBn}”" : "“${currentVerse.textEn}”",
+            widget.isBangla
+                ? "“${currentVerse.textBn}”"
+                : "“${currentVerse.textEn}”",
             style: TextStyle(
               color: textColor,
-              fontSize: 15,
+              fontSize: contentSize,
               height: 1.5,
               fontWeight: FontWeight.w500,
               fontStyle: FontStyle.italic,
@@ -752,10 +1043,12 @@ class _HomePageState extends State<HomePage> {
           Align(
             alignment: Alignment.centerRight,
             child: Text(
-              widget.isBangla ? currentVerse.referenceBn : currentVerse.referenceEn,
+              widget.isBangla
+                  ? currentVerse.referenceBn
+                  : currentVerse.referenceEn,
               style: TextStyle(
                 color: subtextColor,
-                fontSize: 12,
+                fontSize: titleSize * 0.85,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -765,151 +1058,266 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildRamadanDuaSection(Color primaryGreen, Color surfaceColor, Color textColor, Color subtextColor) {
+  Widget _buildRamadanDuaSection(Color primaryGreen, Color surfaceColor,
+      Color textColor, Color subtextColor, double maxWidth) {
+    final bool isWide = maxWidth > 800;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           widget.isBangla ? "রমজানের দোয়া" : "Ramadan Dua",
           style: TextStyle(
-            fontSize: 18,
+            fontSize: (maxWidth * 0.045).clamp(18.0, 22.0),
             fontWeight: FontWeight.bold,
             color: textColor,
           ),
         ),
         const SizedBox(height: 16),
-        _buildDuaCard(
-          widget.isBangla ? "সেহরির দোয়া" : "Sehri Dua",
-          "نَوَيْتُ اَنْ اَصُوْمَ رَمَضَانَ الْكَرِيْمِ مِنْ শَهْرِ رَمَضَانَ الْمُبَارَكِ فَرْضًا لَكَ يَا اَللهُ فَتَقَبَّلْ مِنِّى اِنَّكَ اَنْتَ السَّمِيْعُ الْعَلِيْمُ",
-          widget.isBangla 
-            ? "নাওয়াইতু আন আছুমা গাদাম মিন শাহরি রামাদ্বানাল মুবারাকি ফারদাল্লাকা ইয়া আল্লাহু ফাতাক্বাব্বাল মিন্নি ইন্নাকা আনতাস সামিউল আলিম।" 
-            : "Nawaitu an asuma ghadam min shahri ramadanal mubaraki fardal-laka ya Allahu fataqabbal minni innaka antas-samiul 'alim.",
-          widget.isBangla 
-            ? "হে আল্লাহ! আমি আগামীকাল পবিত্র রমজান মাসের রোজা রাখার নিয়ত করলাম, যা আপনার পক্ষ থেকে ফরজ। সুতরাং আমার পক্ষ থেকে তা কবুল করুন। নিশ্চয়ই আপনি সর্বশ্রোতা ও সর্বজ্ঞ।" 
-            : "O Allah! I intend to keep the fast tomorrow for the month of Ramadan, which is obligatory from You. So accept it from me. Indeed, You are the All-Hearing, the All-Knowing.",
-          primaryGreen, surfaceColor, textColor, subtextColor
-        ),
-        const SizedBox(height: 16),
-        _buildDuaCard(
-          widget.isBangla ? "ইফতারের দোয়া" : "Iftar Dua",
-          "اللَّهُمَّ لَكَ صُمْتُ وَبِكَ آمَنْتُ وَعَلَيْكَ تَوَكَّلْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ",
-          widget.isBangla 
-            ? "আল্লাহুম্মা লাকা ছুমতু ওয়া বিকা আমানতু ওয়া আলাইকা তাওয়াক্কালতু ওয়া আলা রিযক্বিকা আফতারতু।" 
-            : "Allahumma laka sumtu wa bika amantu wa 'alayka tawakkaltu wa 'ala rizqika aftartu.",
-          widget.isBangla 
-            ? "হে আল্লাহ! আমি আপনার সন্তুষ্টির জন্য রোজা রেখেছি এবং আপনার ওপরই ঈমান এনেছি, আপনার ওপর ভরসা করেছি এবং আপনার দেওয়া রিজিক দিয়েই ইফতার করছি।" 
-            : "O Allah! I fasted for You and I believe in You and I put my trust in You and I break my fast with Your sustenance.",
-          primaryGreen, surfaceColor, textColor, subtextColor
-        ),
+        if (isWide)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: _buildDuaCard(
+                    widget.isBangla ? "সেহরির দোয়া" : "Sehri Dua",
+                    "نَوَيْتُ اَنْ اَصُوْমَ رَمَضَانَ الْكَرِيْمِ مِنْ شَهْرِ رَمَضَانَ الْمُبَارَكِ فَرْضًا لَكَ يَا اَللهُ فَتَقَبَّلْ مِنِّى اِنَّكَ اَنْتَ السَّمِيْعُ الْعَلِيْمُ",
+                    widget.isBangla
+                        ? "নাওয়াইতু আন আছুমা গাদাম মিন শাহরি রামাদ্বানাল মুবারাকি ফারদাল্লাকা ইয়া আল্লাহু ফাতাক্বাব্বাল মিন্নি ইন্নাকা আনতাস সামিউল আলিম।"
+                        : "Nawaitu an asuma ghadam min shahri ramadanal mubaraki fardal-laka ya Allahu fataqabbal minni innaka antas-samiul 'alim.",
+                    widget.isBangla
+                        ? "হে আল্লাহ! আমি আগামীকাল পবিত্র রমজান মাসের রোজা রাখার নিয়ত করলাম, যা আপনার পক্ষ থেকে ফরজ। সুতরাং আমার পক্ষ থেকে তা কবুল করুন। নিশ্চয়ই আপনি সর্বশ্রোতা ও সর্বজ্ঞ।"
+                        : "O Allah! I intend to keep the fast tomorrow for the month of Ramadan, which is obligatory from You. So accept it from me. Indeed, You are the All-Hearing, the All-Knowing.",
+                    primaryGreen,
+                    surfaceColor,
+                    textColor,
+                    subtextColor,
+                    maxWidth),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildDuaCard(
+                    widget.isBangla ? "ইফতারের দোয়া" : "Iftar Dua",
+                    "اللَّهُمَّ لَكَ صُمْتُ وَتَوَكَّلْتُ عَلَى رِزْقِكَ وَأَفْطَرْتُ بِরَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ",
+                    widget.isBangla
+                        ? "আল্লাহুম্মা লাকা ছুমতু ওয়া তা'ওয়াক্কালতু আ'লা রিজকিকা ওয়া আফতারতু বি রাহমাতিকা ইয়া আর হামার রা-হিমীন।"
+                        : "Allahumma laka sumtu wa tawakkaltu 'ala rizqika wa aftartu bi-rahmatika ya arhamar-rahimin.",
+                    widget.isBangla
+                        ? "হে আল্লাহ! আমি আপনার সন্তুষ্টির জন্য রোজা রেখেছি এবং আপনার ওপর ভরসা করেছি, আপনার দেওয়া রিজিক দিয়েই ইফতার করছি। আপনার দয়ার উসিলায়, হে শ্রেষ্ঠ দয়ালু।"
+                        : "O Allah! I fasted for You and I put my trust in Your provision and I break my fast with Your mercy, O Most Merciful of the merciful.",
+                    primaryGreen,
+                    surfaceColor,
+                    textColor,
+                    subtextColor,
+                    maxWidth),
+              ),
+            ],
+          )
+        else
+          Column(
+            children: [
+              _buildDuaCard(
+                  widget.isBangla ? "সেহরির দোয়া" : "Sehri Dua",
+                  "نَوَيْتُ اَنْ اَصُوْমَ রَمَضَانَ الْكَرِيْمِ مِنْ شَهْرِ رَمَضَانَ الْمُبَارَكِ فَرْضًا لَكَ يَا اَللهُ فَتَقَبَّلْ مِنِّى اِنَّكَ اَنْتَ السَّمِيْعُ الْعَلِيْمُ",
+                  widget.isBangla
+                      ? "নাওয়াইতু আন আছুমা গাদাম মিন শাহরি রামাদ্বানাল মুবারাকি ফারদাল্লাকা ইয়া আল্লাহু ফাতাক্বাব্বাল মিন্নি ইন্নাকা আনতাস সামিউল আলিম।"
+                      : "Nawaitu an asuma ghadam min shahri ramadanal mubaraki fardal-laka ya Allahu fataqabbal minni innaka antas-samiul 'alim.",
+                  widget.isBangla
+                      ? "হে আল্লাহ! আমি আগামীকাল পবিত্র রমজান মাসের রোজা রাখার নিয়ত করলাম, যা আপনার পক্ষ থেকে ফরজ। সুতরাং আমার পক্ষ থেকে তা কবুল করুন। নিশ্চয়ই আপনি সর্বশ্রোতা ও সর্বজ্ঞ।"
+                      : "O Allah! I intend to keep the fast tomorrow for the month of Ramadan, which is obligatory from You. So accept it from me. Indeed, You are the All-Hearing, the All-Knowing.",
+                  primaryGreen,
+                  surfaceColor,
+                  textColor,
+                  subtextColor,
+                  maxWidth),
+              const SizedBox(height: 16),
+              _buildDuaCard(
+                  widget.isBangla ? "ইফতারের দোয়া" : "Iftar Dua",
+                  "اللَّهُمَّ لَكَ صُمْتُ وَتَوَكَّلْتُ عَلَى رِزْقِكَ وَأَفْطَرْتُ بِরَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ",
+                  widget.isBangla
+                      ? "আল্লাহুম্মা লাকা ছুমতু ওয়া তা'ওয়াক্কালতু আ'লা রিজকিকা ওয়া আফতারতু বি রাহমাতিকা ইয়া আর হামার রা-হিমীন।"
+                      : "Allahumma laka sumtu wa tawakkaltu 'ala rizqika wa aftartu bi-rahmatika ya arhamar-rahimin.",
+                  widget.isBangla
+                      ? "হে আল্লাহ! আমি আপনার সন্তুষ্টির জন্য রোজা রেখেছি এবং আপনার ওপর ভরসা করেছি, আপনার দেওয়া রিজিক দিয়েই ইফতার করছি। আপনার দয়ার উসিলায়, হে শ্রেষ্ঠ দয়ালু।"
+                      : "O Allah! I fasted for You and I put my trust in Your provision and I break my fast with Your mercy, O Most Merciful of the merciful.",
+                  primaryGreen,
+                  surfaceColor,
+                  textColor,
+                  subtextColor,
+                  maxWidth),
+            ],
+          ),
       ],
     );
   }
 
-  Widget _buildDuaCard(String title, String arabic, String uccharon, String meaning, Color primary, Color surface, Color text, Color subtext) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: widget.isDarkMode ? Colors.white10 : Colors.black.withOpacity(0.05)),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(widget.isDarkMode ? 0.2 : 0.05), blurRadius: 10, offset: const Offset(0, 4)),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
+  Widget _buildDuaCard(String title, String arabic, String uccharon,
+      String meaning, Color primary, Color surface, Color text, Color subtext, double screenWidth) {
+    return LayoutBuilder(builder: (context, constraints) {
+      final double cardWidth = constraints.maxWidth;
+      final double padding = (cardWidth * 0.06).clamp(16.0, 24.0);
+      final double arabicSize = (cardWidth * 0.08).clamp(20.0, 32.0);
+      final double labelSize = (cardWidth * 0.05).clamp(12.0, 18.0);
+
+      return Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: surface,
           borderRadius: BorderRadius.circular(24),
-          onTap: () => _showDuaOrthoDetail(context, title, meaning, primary, surface, text),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(color: primary.withOpacity(0.1), shape: BoxShape.circle),
-                          child: Icon(Icons.star_rounded, color: primary, size: 18),
+          border: Border.all(
+              color: widget.isDarkMode
+                  ? Colors.white10
+                  : Colors.black.withOpacity(0.05)),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(widget.isDarkMode ? 0.2 : 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4)),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(24),
+            onTap: () => _showDuaOrthoDetail(
+                context, title, meaning, primary, surface, text),
+            child: Padding(
+              padding: EdgeInsets.all(padding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  color: primary.withOpacity(0.1),
+                                  shape: BoxShape.circle),
+                              child: Icon(Icons.star_rounded,
+                                  color: primary, size: (cardWidth * 0.06).clamp(16.0, 24.0)),
+                            ),
+                            const SizedBox(width: 12),
+                            Flexible(
+                              child: Text(title,
+                                  style: TextStyle(
+                                      fontSize: labelSize,
+                                      fontWeight: FontWeight.bold,
+                                      color: primary)),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 12),
-                        Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: primary)),
-                      ],
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.info_outline_rounded, size: 12, color: primary),
-                          const SizedBox(width: 4),
-                          Text(
-                            widget.isBangla ? "অর্থ দেখুন" : "Meaning",
-                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: primary),
-                          ),
-                        ],
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.info_outline_rounded,
+                                size: 12, color: primary),
+                            const SizedBox(width: 4),
+                            Text(
+                              widget.isBangla ? "অর্থ দেখুন" : "Meaning",
+                              style: TextStyle(
+                                  fontSize: (cardWidth * 0.035).clamp(10.0, 12.0),
+                                  fontWeight: FontWeight.bold,
+                                  color: primary),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Text(arabic, textAlign: TextAlign.center, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: text, fontFamily: 'serif', height: 1.5)),
-                const SizedBox(height: 16),
-                _buildDuaDetailSection(widget.isBangla ? "উচ্চারণ:" : "Pronunciation:", uccharon, primary, text),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: Text(arabic,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: arabicSize,
+                            fontWeight: FontWeight.bold,
+                            color: text,
+                            fontFamily: 'serif',
+                            height: 1.5)),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildDuaDetailSection(
+                      widget.isBangla ? "উচ্চারণ:" : "Pronunciation:",
+                      uccharon,
+                      primary,
+                      text,
+                      labelSize * 0.8),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
-  void _showDuaOrthoDetail(BuildContext context, String title, String meaning, Color primary, Color surface, Color text) {
+  void _showDuaOrthoDetail(BuildContext context, String title, String meaning,
+      Color primary, Color surface, Color text) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text(title, style: TextStyle(color: text, fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(title,
+            style: TextStyle(
+                color: text, fontWeight: FontWeight.bold, fontSize: 18)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               widget.isBangla ? "অর্থ:" : "Meaning:",
-              style: TextStyle(color: primary, fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 0.5),
+              style: TextStyle(
+                  color: primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  letterSpacing: 0.5),
             ),
             const SizedBox(height: 12),
             Text(
               meaning,
-              style: TextStyle(color: text, fontSize: 16, height: 1.5, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                  color: text,
+                  fontSize: 16,
+                  height: 1.5,
+                  fontWeight: FontWeight.w500),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(widget.isBangla ? "ঠিক আছে" : "Close", style: TextStyle(color: primary, fontWeight: FontWeight.bold)),
+            child: Text(widget.isBangla ? "ঠিক আছে" : "Close",
+                style: TextStyle(color: primary, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDuaDetailSection(String label, String content, Color primary, Color text) {
+  Widget _buildDuaDetailSection(
+      String label, String content, Color primary, Color text, double labelSize) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(color: primary, fontWeight: FontWeight.bold, fontSize: 12)),
+        Text(label,
+            style: TextStyle(
+                color: primary, fontWeight: FontWeight.bold, fontSize: labelSize)),
         const SizedBox(height: 4),
-        Text(content, style: TextStyle(color: text.withOpacity(0.8), fontSize: 14, height: 1.4)),
+        Text(content,
+            style: TextStyle(
+                color: text.withOpacity(0.8), fontSize: labelSize * 1.1, height: 1.4)),
       ],
     );
   }
@@ -921,11 +1329,12 @@ class _HomePageState extends State<HomePage> {
     Color surfaceColor,
     Color textColor,
     VoidCallback onTap,
+    bool isTablet,
   ) {
     return Container(
       decoration: BoxDecoration(
         color: surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(widget.isDarkMode ? 0.2 : 0.04),
@@ -938,31 +1347,35 @@ class _HomePageState extends State<HomePage> {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
           child: Padding(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(isTablet ? 12 : 8),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: accentColor.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: accentColor.withOpacity(0.1), width: 1),
+                Flexible(
+                  child: Container(
+                    padding: EdgeInsets.all(isTablet ? 12 : 8),
+                    decoration: BoxDecoration(
+                      color: accentColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: FittedBox(
+                      child: Icon(icon, color: accentColor, size: isTablet ? 32 : 26),
+                    ),
                   ),
-                  child: Icon(icon, color: accentColor, size: 22),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: isTablet ? 12 : 8),
                 Text(
                   title,
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: isTablet ? 14 : 11,
                     fontWeight: FontWeight.bold,
                     color: textColor,
+                    height: 1.2,
                   ),
                 ),
               ],

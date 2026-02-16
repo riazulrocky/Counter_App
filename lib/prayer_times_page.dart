@@ -108,30 +108,35 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
               ),
               const SizedBox(height: 20),
               Flexible(
-                child: GridView.count(
-                  shrinkWrap: true,
-                  crossAxisCount: 2,
-                  childAspectRatio: 3,
-                  children: _cities.keys.map((city) {
-                    return InkWell(
-                      onTap: () {
-                        widget.onLocationChanged(city);
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: widget.selectedCity == city ? Colors.green.shade600 : (widget.isDarkMode ? Colors.white10 : Colors.grey.shade100),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          widget.isBangla ? _cityNamesBn[city]! : city,
-                          style: TextStyle(color: widget.selectedCity == city ? Colors.white : (widget.isDarkMode ? Colors.white70 : Colors.black87), fontWeight: FontWeight.bold),
-                        ),
-                      ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final crossAxisCount = constraints.maxWidth > 600 ? 4 : 2;
+                    return GridView.count(
+                      shrinkWrap: true,
+                      crossAxisCount: crossAxisCount,
+                      childAspectRatio: 3,
+                      children: _cities.keys.map((city) {
+                        return InkWell(
+                          onTap: () {
+                            widget.onLocationChanged(city);
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: widget.selectedCity == city ? Colors.green.shade600 : (widget.isDarkMode ? Colors.white10 : Colors.grey.shade100),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              widget.isBangla ? _cityNamesBn[city]! : city,
+                              style: TextStyle(color: widget.selectedCity == city ? Colors.white : (widget.isDarkMode ? Colors.white70 : Colors.black87), fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     );
-                  }).toList(),
+                  }
                 ),
               ),
             ],
@@ -146,70 +151,89 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
     final primaryGreen = Colors.green.shade600;
     final prayerTimes = _getPrayerTimes(DateTime.now());
 
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            InkWell(
-              onTap: _showLocationPicker,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.location_on, color: primaryGreen),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(widget.isBangla ? "লোকেশন" : "Location", style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                          Text(widget.isBangla ? _cityNamesBn[widget.selectedCity]! : widget.selectedCity, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                    ),
-                    Icon(Icons.keyboard_arrow_down, color: primaryGreen),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.all(20),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double maxWidth = constraints.maxWidth;
+        final double horizontalPadding = maxWidth > 600 ? maxWidth * 0.15 : 20.0;
+
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 10.0),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 600),
                 child: Column(
                   children: [
-                    Text(_toBn(DateFormat('EEEE, dd MMMM, yyyy').format(_currentTime)), textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: widget.isDarkMode ? Colors.white70 : Colors.black54)),
-                    const SizedBox(height: 8),
-                    Text(_toBn(DateFormat('hh:mm:ss a').format(_currentTime)), style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: primaryGreen)),
-                    const Divider(height: 30),
-                    _buildPrayerRow(widget.isBangla ? "ফজর" : "Fajr", prayerTimes.fajr, primaryGreen),
-                    _buildPrayerRow(widget.isBangla ? "সূর্যোদয়" : "Sunrise", prayerTimes.sunrise, Colors.orange),
-                    _buildPrayerRow(widget.isBangla ? "যোহর" : "Dhuhr", prayerTimes.dhuhr, primaryGreen),
-                    _buildPrayerRow(widget.isBangla ? "আসর" : "Asr", prayerTimes.asr, primaryGreen),
-                    _buildPrayerRow(widget.isBangla ? "মাগরিব" : "Maghrib", prayerTimes.maghrib, primaryGreen),
-                    _buildPrayerRow(widget.isBangla ? "এশা" : "Isha", prayerTimes.isha, primaryGreen),
+                    const SizedBox(height: 10),
+                    InkWell(
+                      onTap: _showLocationPicker,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.location_on, color: primaryGreen),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(widget.isBangla ? "লোকেশন" : "Location", style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                                  Text(widget.isBangla ? _cityNamesBn[widget.selectedCity]! : widget.selectedCity, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                ],
+                              ),
+                            ),
+                            Icon(Icons.keyboard_arrow_down, color: primaryGreen),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(_toBn(DateFormat('EEEE, dd MMMM, yyyy').format(_currentTime)), textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: widget.isDarkMode ? Colors.white70 : Colors.black54)),
+                            ),
+                            const SizedBox(height: 8),
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(_toBn(DateFormat('hh:mm:ss a').format(_currentTime)), style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: primaryGreen)),
+                            ),
+                            const Divider(height: 30),
+                            _buildPrayerRow(widget.isBangla ? "ফজর" : "Fajr", prayerTimes.fajr, primaryGreen),
+                            _buildPrayerRow(widget.isBangla ? "সূর্যোদয়" : "Sunrise", prayerTimes.sunrise, Colors.orange),
+                            _buildPrayerRow(widget.isBangla ? "যোহর" : "Dhuhr", prayerTimes.dhuhr, primaryGreen),
+                            _buildPrayerRow(widget.isBangla ? "আসর" : "Asr", prayerTimes.asr, primaryGreen),
+                            _buildPrayerRow(widget.isBangla ? "মাগরিব" : "Maghrib", prayerTimes.maghrib, primaryGreen),
+                            _buildPrayerRow(widget.isBangla ? "এশা" : "Isha", prayerTimes.isha, primaryGreen),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    Text(widget.isBangla ? "আগামী ৭ দিনের সূচি" : "Next 7 Days Schedule", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: widget.isDarkMode ? Colors.white : Colors.black87)),
+                    const SizedBox(height: 12),
+                    _buildWeeklySchedule(primaryGreen),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 30),
-            Text(widget.isBangla ? "আগামী ৭ দিনের সূচি" : "Next 7 Days Schedule", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: widget.isDarkMode ? Colors.white : Colors.black87)),
-            const SizedBox(height: 12),
-            _buildWeeklySchedule(primaryGreen),
-          ],
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
 
@@ -220,7 +244,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(children: [Icon(Icons.access_time, size: 20, color: color.withOpacity(0.7)), const SizedBox(width: 12), Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500))]),
-          Text(_toBn(DateFormat.jm().format(time)), style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 18)),
+          FittedBox(fit: BoxFit.scaleDown, child: Text(_toBn(DateFormat.jm().format(time)), style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 18))),
         ],
       ),
     );
@@ -239,7 +263,7 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           color: widget.isDarkMode ? const Color(0xFF1E293B) : Colors.white,
           child: ExpansionTile(
-            title: Text(_toBn(DateFormat('EEEE, d MMMM').format(date)), style: const TextStyle(fontWeight: FontWeight.w600)),
+            title: Text(_toBn(DateFormat('EEEE, d MMMM').format(date)), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
             iconColor: primaryGreen,
             children: [
               _buildSmallTime(widget.isBangla ? "ফজর" : "Fajr", times.fajr),
@@ -256,6 +280,6 @@ class _PrayerTimesPageState extends State<PrayerTimesPage> {
   }
 
   Widget _buildSmallTime(String label, DateTime time) {
-    return Padding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(label, style: const TextStyle(color: Colors.grey)), Text(_toBn(DateFormat.jm().format(time)), style: const TextStyle(fontWeight: FontWeight.w500))]));
+    return Padding(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(label, style: const TextStyle(color: Colors.grey, fontSize: 13)), Text(_toBn(DateFormat.jm().format(time)), style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13))]));
   }
 }
